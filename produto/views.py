@@ -14,8 +14,11 @@ def visualizarLoja(request, categoria_slug=None):
         produto_quant = produtos.count()
     else:
         produtos = Produto.objects.all().filter(esta_disponivel = True)
-        produtos_quant = produtos.count()
+        produto_quant = produtos.count()
         
+    context = {
+        'produtos':produtos,
+        'produto_quant':produto_quant,
+    }
     
-    
-    return render(request, 'shop-grid.html')
+    return render(request, 'shop-grid.html', context)
