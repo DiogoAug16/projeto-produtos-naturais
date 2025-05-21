@@ -22,6 +22,17 @@
     <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'css/slicknav.min.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
+    <style>
+        #preloder {
+        display: none; /* Escondido por padrão */
+        position: fixed;
+        left: 0; top: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 9999;
+        /* outros estilos do preloader aqui */
+        }
+    </style>
 </head>
 
 <body>
@@ -336,14 +347,21 @@
                         </div>
                     </div>
                     <div class="filter__item">
+                        <div id = produtos_inicio></div>
                         <div class="row">
                             <div class="col-lg-4 col-md-5">
-                                <div class="filter__sort">
-                                    <span>Sort By</span>
-                                    <select>
-                                        <option value="0">Default</option>
-                                        <option value="0">Default</option>
-                                    </select>
+                                <div class="filter__sort d-flex align-items-center gap-2">
+                                    <span class="me-2">Ordenar por</span>
+                                    <form method="get" id="filtro-preco-form" class="m-0">
+                                        <select name="ordenar" class="form-select form-select-sm" onchange="document.getElementById('filtro-preco-form').submit();">
+                                            <option value="preco_crescente" {% if request.GET.ordenar == 'preco_crescente' %}selected{% endif %}>
+                                                Preço crescente
+                                            </option>
+                                            <option value="preco_decrescente" {% if request.GET.ordenar == 'preco_decrescente' %}selected{% endif %}>
+                                                Preço decrescente
+                                            </option>
+                                        </select>
+                                    </form>
                                 </div>
                             </div>
                             <div class="col-lg-4 col-md-4">
@@ -387,24 +405,30 @@
                         <div class="col-lg-4 col-md-6 col-sm-6">
                         </div>
                     </div>
+                    {% if produtos.paginator.num_pages > 1 %}
                     <div class="product__pagination">
                         {% if produtos.has_previous %}
-                            <a href="?page={{ produtos.previous_page_number }}"><i class="fa fa-long-arrow-left"></i></a>
+                            <a href="?page={{ produtos.previous_page_number }}{% if request.GET.ordenar %}&ordenar={{ request.GET.ordenar }}{% endif %}">
+                                <i class="fa fa-long-arrow-left"></i>
+                            </a>
                         {% endif %}
-                    
+                        
                         {% for num in produtos.paginator.page_range %}
                             {% if produtos.number == num %}
-                                <a class="active" href="?page={{ num }}">{{ num }}</a>
+                                <a class="active" href="?page={{ num }}{% if request.GET.ordenar %}&ordenar={{ request.GET.ordenar }}{% endif %}">{{ num }}</a>
                             {% else %}
-                                <a href="?page={{ num }}">{{ num }}</a>
+                                <a href="?page={{ num }}{% if request.GET.ordenar %}&ordenar={{ request.GET.ordenar }}{% endif %}">{{ num }}</a>
                             {% endif %}
                         {% endfor %}
-                     
+                
                         {% if produtos.has_next %}
-                            <a href="?page={{ produtos.next_page_number }}"><i class="fa fa-long-arrow-right"></i></a>
-                            <!-- <p>Próxima página: {{ produtos.next_page_number }}</p> -->
+                            <a href="?page={{ produtos.next_page_number }}{% if request.GET.ordenar %}&ordenar={{ request.GET.ordenar }}{% endif %}">
+                                <i class="fa fa-long-arrow-right"></i>
+                            </a>
                         {% endif %}
                     </div>
+                {% endif %}
+                
                 </div>
             </div>
         </div>
@@ -422,5 +446,32 @@
     <script src="{% static 'js/mixitup.min.js' %}"></script>
     <script src="{% static 'js/owl.carousel.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    <script>
+        window.onload = function() {
+            const url = new URL(window.location.href);
+            if (url.searchParams.has("page")) {
+                const produtos = document.getElementById("produtos_inicio");
+                if (produtos) {
+                    produtos.scrollIntoView({ behavior: "smooth" });
+                }
+            }
+        };
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const preloader = document.getElementById('preloder');
+    
+            if (!sessionStorage.getItem('preloaderShown')) {
+                // Mostra o preloader no começo da carga
+                preloader.style.display = 'block';
+    
+                window.addEventListener('load', function() {
+                    // Esconde quando a página carregar
+                    preloader.style.display = 'none';
+                    sessionStorage.setItem('preloaderShown', 'true');
+                });
+            }
+        });
+    </script>
 </body>
 </html>
