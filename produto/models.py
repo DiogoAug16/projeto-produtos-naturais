@@ -12,6 +12,8 @@ class Produto(models.Model):
     preco = models.DecimalField(max_digits=10, decimal_places=2)
     estoque = models.IntegerField(default=0)
     esta_disponivel = models.BooleanField(default=True)
+    promocao_disponivel = models.BooleanField(default=False)
+    promocao_valor_porcentagem = models.DecimalField(max_digits=2, decimal_places=0, default=0, blank=True)
 
     def __str__(self):
         return self.produto_nome
