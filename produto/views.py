@@ -13,11 +13,11 @@ from produto.models import Produto
 def visualizarLoja(request, categoria_slug=None):
     categoria = None
     ordenar = request.GET.get('ordenar')
+    # valor_promo = 
     
     if categoria_slug:
         categoria = get_object_or_404(Categoria, slug=categoria_slug)
         produtos_list = Produto.objects.filter(categoria=categoria, esta_disponivel=True)
-
     else:
         produtos_list = Produto.objects.filter(esta_disponivel=True)
 
