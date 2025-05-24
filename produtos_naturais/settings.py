@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'produto',
-    'categoria',    
+    'categoria',
+    'departamento',  
+    'carrinho',  
 ]
 
 MIDDLEWARE = [
@@ -64,6 +66,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'categoria.context_processors.menu_categoria',
+                'departamento.context_processors.menu_departamento',
             ],
         },
     },

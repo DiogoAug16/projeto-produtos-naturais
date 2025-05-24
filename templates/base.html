@@ -24,13 +24,13 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
     <style>
         #preloder {
-        display: none; /* Escondido por padrão */
+        display: none;
         position: fixed;
         left: 0; top: 0;
         width: 100%; height: 100%;
         background: rgba(0,0,0,0.7);
         z-index: 9999;
-        /* outros estilos do preloader aqui */
+
     }
 </style>
 
@@ -41,10 +41,8 @@
     {%block content%}
     {% endblock %}
     {% include 'includes/footer.html' %}
-</body>
 
-<body>
-        <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/jquery.nice-select.min.js' %}"></script>
     <script src="{% static 'js/jquery-ui.min.js' %}"></script>
@@ -63,6 +61,95 @@
             }
         };
     </script>
+    <script>
+        $(function () {
+            const slider = $(".price-range");
+            const minAmountInput = $("#minamount");
+            const maxAmountInput = $("#maxamount");
+        
+            if (slider.length && typeof slider.data("min") !== 'undefined') {
+                const minSliderVal = parseInt(slider.data("min"));
+                const maxSliderVal = parseInt(slider.data("max"));
+                const startVal = parseInt(slider.data("start"));
+                const endVal = parseInt(slider.data("end"));
+        
+                slider.slider({
+                    range: true,
+                    min: minSliderVal,
+                    max: maxSliderVal,
+                    values: [startVal, endVal],
+                    slide: function (event, ui) {
+                        minAmountInput.val(ui.values[0]);
+                        maxAmountInput.val(ui.values[1]);
+                    },
+                    change: function (event, ui) {
+                        if (event.originalEvent) {
+                            minAmountInput.val(ui.values[0]);
+                            maxAmountInput.val(ui.values[1]);
+        
+                            $('html, body').animate({ scrollTop: 0 }, 600, function() {
+                                const url = new URL(window.location.href);
+                                url.searchParams.set('preco_min', ui.values[0]);
+                                url.searchParams.set('preco_max', ui.values[1]);
+                                url.searchParams.delete('page');
+                                window.location.href = url.toString();
+                            });
+                        }
+                    }
+                });
+        
+                minAmountInput.val(slider.slider("values", 0));
+                maxAmountInput.val(slider.slider("values", 1));
+        
+                function handlePriceInputChange() {
+                    let currentMin = parseInt(minAmountInput.val());
+                    let currentMax = parseInt(maxAmountInput.val());
+        
+                    if (isNaN(currentMin) || currentMin < minSliderVal) {
+                        currentMin = minSliderVal;
+                    } else if (currentMin > maxSliderVal) {
+                        currentMin = maxSliderVal;
+                    }
+        
+                    if (isNaN(currentMax) || currentMax > maxSliderVal) {
+                        currentMax = maxSliderVal;
+                    } else if (currentMax < minSliderVal) {
+                        currentMax = minSliderVal;
+                    }
+                    
+                    if (this.id === "minamount") {
+                        if (currentMin > currentMax) {
+                            currentMax = currentMin;
+                        }
+                    } else if (this.id === "maxamount") {
+                        if (currentMax < currentMin) {
+                            currentMin = currentMax;
+                        }
+                    }
+                    
+                    currentMin = Math.max(minSliderVal, Math.min(currentMin, maxSliderVal));
+                    currentMax = Math.max(minSliderVal, Math.min(currentMax, maxSliderVal));
+        
+                    minAmountInput.val(currentMin);
+                    maxAmountInput.val(currentMax);
+
+                    slider.slider("values", [currentMin, currentMax]);
+        
+                    $('html, body').animate({ scrollTop: 0 }, 600, function() {
+                        const url = new URL(window.location.href);
+                        url.searchParams.set('preco_min', currentMin);
+                        url.searchParams.set('preco_max', currentMax);
+                        url.searchParams.delete('page');
+                        window.location.href = url.toString();
+                    });
+                }
+        
+                minAmountInput.on("change", handlePriceInputChange);
+                maxAmountInput.on("change", handlePriceInputChange);
+            }
+        });
+    </script>
+    
 </body>
 
 </html>

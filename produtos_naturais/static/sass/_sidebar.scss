@@ -50,25 +50,79 @@
         margin-top: 20px;
 
         .price-input {
-            position: relative;
+            display: flex;
+            align-items: center; // Alinha verticalmente os wrappers e o separador
+            justify-content: center;
+            gap: 15px; // Espaço entre as seções de preço e o separador
 
-            &:after {
-                position: absolute;
-                left: 38px;
-                top: 13px;
-                height: 1px;
-                width: 5px;
-                background: #dd2222;
-                content: "";
+            .price-input-wrapper {
+                display: flex;
+                flex-direction: column;
+                align-items: center; // Centraliza o rótulo e a caixa de preço
+
+                .price-label {
+                    display: flex;
+                    align-items: center;
+                    font-size: 13px; // Ajuste conforme a imagem
+                    color: #666666;   // Cor do texto do rótulo
+                    margin-bottom: 8px; // Espaço entre o rótulo e a caixa
+
+                    .text {
+                        padding: 0 8px; // Espaço entre o texto e as linhas
+                        white-space: nowrap;
+                    }
+
+                    .line {
+                        width: 25px; // Comprimento das linhas ao lado do texto
+                        height: 1px;
+                        background-color: #b0b0b0; // Cor das linhas
+                    }
+                }
+
+                .price-box {
+                    display: flex;
+                    align-items: center;
+                    gap: 5px; // Espaço entre "R$" e o número
+                    border: 1px solid #c0c0c0; // Borda da caixa
+                    border-radius: 6px;        // Cantos arredondados
+                    padding: 10px 15px;        // Espaçamento interno da caixa
+                    background-color: #f0f0f0; // Um fundo levemente acinzentado para a caixa
+                    // box-shadow: 0 1px 1px rgba(0,0,0,0.05); // Sombra sutil opcional
+
+                    .currency {
+                        font-size: 15px;
+                        font-weight: normal; // Peso da fonte para "R$"
+                        color: #555555;    // Cor para "R$"
+                    }
+
+                    input[type="text"] {
+                        font-size: 15px;
+                        font-weight: bold;   // Números em negrito
+                        color: #333333;       // Cor dos números
+                        border: none;
+                        background-color: transparent; // Fundo do input transparente
+                        text-align: left;         // Alinhamento do texto (na imagem parece à esquerda)
+                        outline: none;            // Remove o outline ao focar
+                        width: 60px;              // Ajuste a largura conforme necessário para os números
+                                                  // Pode ser auto se a caixa tiver um min-width
+                        padding: 0;               // Remove padding padrão do input
+                        margin: 0;                // Remove margem padrão do input
+
+                        &::placeholder { // Caso decida usar placeholders novamente
+                            color: #999999;
+                            font-weight: normal;
+                        }
+                    }
+                }
             }
 
-            input {
-                font-size: 16px;
-                color: #dd2222;
-                font-weight: 700;
-                max-width: 20%;
-                border: none;
-                display: inline-block;
+            .price-separator {
+                color: #777777;     // Cor do hífen
+                font-size: 22px;   // Tamanho do hífen
+                font-weight: normal;
+                position: relative;
+                top: 11px;
+                // O alinhamento vertical é cuidado pelo align-items: center do .price-input
             }
         }
     }
