@@ -1,3 +1,5 @@
+from decimal import Decimal
+import re
 from django.db import models
 
 from categoria.admin import Categoria
@@ -14,6 +16,10 @@ class Produto(models.Model):
     esta_disponivel = models.BooleanField(default=True)
     promocao_disponivel = models.BooleanField(default=False)
     promocao_valor_porcentagem = models.DecimalField(max_digits=2, decimal_places=0, default=0, blank=True)
+    
+    def preco_com_desconto(self):
+        if self.promocao_disponivel and self.promocao_valor_porcentagem > 0:
+            return self.preco - (self.preco * (self.promocao_valor_porcentagem / Decimal('100')))
 
     def __str__(self):
         return self.produto_nome

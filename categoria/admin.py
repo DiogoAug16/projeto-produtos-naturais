@@ -8,7 +8,7 @@ class CategoriaAdmin(admin.ModelAdmin):
         'slug':('categoria_nome',)
 
     }
-    list_display=('categoria_nome', 'slug', 'descricao')
+    list_display=('categoria_nome', 'slug', 'departamento', 'descricao')
     search_fields=('categoria_nome',)
 
 admin.site.register(Categoria, CategoriaAdmin)
