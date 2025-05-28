@@ -294,6 +294,22 @@
     height: 270px;
     position: relative;
     overflow: hidden;
+
+    // ADICIONE ESTA NOVA REGRA para o selo dentro da listagem geral:
+    .product__discount__percent {
+        height: 45px;
+        width: 45px;
+        background: #dd2222;       // Fundo vermelho
+        border-radius: 50%;        // Círculo
+        font-size: 14px;
+        color: $white-color;       // Texto branco (ex: #fff)
+        line-height: 45px;         // Centraliza texto verticalmente
+        text-align: center;        // Centraliza texto horizontalmente
+        position: absolute;
+        left: 15px;
+        top: 15px;
+        z-index: 2;                // Garante que fique sobre a tag <img>
+    }
 }
 
 .product__item__pic__hover {
