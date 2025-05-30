@@ -9,7 +9,7 @@ class ProdutoAdmin(admin.ModelAdmin):
         'slug': ('produto_nome',)
     }
     list_display = ('produto_nome', 'slug', 'preco', 'promocao_valor_porcentagem', 'estoque', 'esta_disponivel','promocao_disponivel', 'categoria',)
-    list_filter = ('esta_disponivel',)
+    list_filter = ('esta_disponivel', 'promocao_disponivel')
     search_fields = ('produto_nome',)
     list_editable = ('preco','promocao_valor_porcentagem', 'estoque', 'esta_disponivel', 'promocao_disponivel')
 
