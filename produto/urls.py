@@ -1,9 +1,11 @@
 
 from django.urls import path
+import departamento
 from produto import views
 
 urlpatterns = [
     path('', views.visualizarLoja, name='shop'),
-    path('<slug:categoria_slug>/', views.visualizarLoja, name='produtos_por_categoria'),
-    path('<slug:categoria_slug>/<slug:produto_slug>/', views.visualizarDetalheProduto, name='visualizarDetalheProduto'),
+    path('departamento/<slug:departamento_slug>/categoria/<slug:categoria_slug>/', views.visualizarLoja, name='produtos_por_categoria'),
+    path('departamento/<slug:departamento_slug>/', views.visualizarLoja, name='produtos_por_departamento'),
+    path('departamento/<slug:departamento_slug>/categoria/<slug:categoria_slug>/<slug:produto_slug>/', views.visualizarDetalheProduto, name='visualizarDetalheProduto'),
 ]

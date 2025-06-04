@@ -29,7 +29,7 @@
                         <h4>Departamentos</h4>
                         {% for dept in opcoes_departamento %}
                         <ul>
-                            <li><a href="#">{{dept.nome}}</a></li>
+                            <li><a href="{{dept.get_url}}">{{dept.nome}}</a></li>
                         </ul>
                         
                         {% endfor %}
@@ -157,7 +157,7 @@
                                 <a href="{{prod.get_url}}">
                                 <img src="{{ prod.produto_imagem.url }}">
                                 </a>
-                                {% if prod.promocao_valor_porcentagem %}
+                                {% if prod.promocao_disponivel %}
                                 <div class="product__discount__percent">-{{prod.promocao_valor_porcentagem}}%</div>
                                 {% endif %}
                                 <ul class="product__item__pic__hover">
@@ -168,7 +168,7 @@
                             </div>
                             <div class="product__item__text">
                                 <h6><a href="{{prod.get_url}}">{{prod.produto_nome}}</a></h6>
-                                {% if prod.promocao_valor_porcentagem %}
+                                {% if prod.promocao_disponivel %}
                                 <h5>
                                     R${{ prod.preco_com_desconto|floatformat:2 }} 
                                     <span class="text-muted" style="text-decoration: line-through;">R${{ prod.preco|floatformat:2 }}</span>

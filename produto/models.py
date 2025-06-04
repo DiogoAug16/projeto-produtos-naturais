@@ -26,4 +26,4 @@ class Produto(models.Model):
         return self.produto_nome
     
     def get_url (self):
-        return reverse('visualizarDetalheProduto', args=[self.categoria.slug, self.slug])
+        return reverse('visualizarDetalheProduto', args=[self.categoria.departamento.slug, self.categoria.slug, self.slug])
