@@ -53,8 +53,12 @@
                             <span>(18 reviews)</span>
                         </div>
                         {% if produto.promocao_disponivel %}
-                        <div class="product__details__price">R${{produto.preco_com_desconto|floatformat:2}}</div>
-                        <span class="text-muted" style="text-decoration: line-through;">R${{produto.preco}}</span>
+                        <div class="product__details__price">
+                            R${{produto.preco_com_desconto|floatformat:2}}
+                        <span class="text-muted" style="text-decoration: line-through; margin-left: 10px; font-size: 0.9em;">
+                            R${{produto.preco}}
+                        </span>
+                        </div>
                         {% else %}
                         <div class="product__details__price">R${{produto.preco}}</div>
                         {% endif %}
@@ -69,7 +73,7 @@
                         <a href="#" class="primary-btn">ADD TO CARD</a>
                         <a href="#" class="heart-icon"><span class="icon_heart_alt"></span></a>
                         <ul>
-                            {%if produto.esta_disponivel%}
+                            {%if produto.esta_disponivel and produto.estoque > 1 %}
                             <li><b>Availability</b> <span>Em estoque</span></li>
                             {%else%}
                             <li><b>Availability</b> <span style="color: red;">Sem estoque</span></li>
