@@ -1,3 +1,4 @@
+from multiprocessing import context
 from django.shortcuts import get_object_or_404, render
 from django.core.paginator import Paginator
 from categoria.models import Categoria
@@ -47,5 +48,12 @@ def visualizarLoja(request, categoria_slug=None):
     
     return render(request, 'shop-grid.html', context)
 
+def  visualizarDetalheProduto (request, categoria_slug, produto_slug):
+    produto = Produto.objects.get(slug = produto_slug, categoria__slug = categoria_slug)
+    context = {
+        'produto': produto,
+    }
+
+    return render(request, 'shop-details.html', context)
     
     
