@@ -1,6 +1,7 @@
 from decimal import Decimal
 import re
 from django.db import models
+from django.urls import reverse
 
 from categoria.admin import Categoria
 
@@ -23,3 +24,6 @@ class Produto(models.Model):
 
     def __str__(self):
         return self.produto_nome
+    
+    def get_url (self):
+        return reverse('visualizarDetalheProduto', args=[self.categoria.slug, self.slug])

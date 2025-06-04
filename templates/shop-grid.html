@@ -11,11 +11,7 @@
         <div class="row">
             <div class="col-lg-12 text-center">
                 <div class="breadcrumb__text">
-                    <h2>Organi Shop</h2>
-                    <div class="breadcrumb__option">
-                        <a href="./index.html">Home</a>
-                        <span>Shop</span>
-                    </div>
+                    <h2>Organi Shop</h2>                        
                 </div>
             </div>
         </div>
@@ -94,6 +90,9 @@
                                 <div class="product__discount__item">
                                     <div class="product__discount__item__pic set-bg"
                                         data-setbg="{{prod.produto_imagem.url}}">
+                                        <a href="{{prod.get_url}}">
+                                            <img src="{{prod.produto_imagem.url}}" >
+                                        </a>
                                         <div class="product__discount__percent">-{{prod.promocao_valor_porcentagem}}%</div>
                                         <ul class="product__item__pic__hover">
                                             <li><a href="#"><i class="fa fa-heart"></i></a></li>
@@ -102,7 +101,7 @@
                                         </ul>
                                     </div>
                                     <div class="product__discount__item__text">
-                                        <h5><a href="#">{{prod.produto_nome}}</a></h5>
+                                        <h5><a href="{{prod.get_url}}">{{prod.produto_nome}}</a></h5>
                                         <div class="product__item__price">
                                             R${{prod.preco_com_desconto|floatformat:2}} 
                                             <span>R${{prod.preco|floatformat:2}}</span>
@@ -155,7 +154,9 @@
                     <div class="col-lg-4 col-md-6 col-sm-6">
                         <div class="product__item">
                             <div class="product__item__pic">
+                                <a href="{{prod.get_url}}">
                                 <img src="{{ prod.produto_imagem.url }}">
+                                </a>
                                 {% if prod.promocao_valor_porcentagem %}
                                 <div class="product__discount__percent">-{{prod.promocao_valor_porcentagem}}%</div>
                                 {% endif %}
@@ -166,7 +167,7 @@
                                 </ul>
                             </div>
                             <div class="product__item__text">
-                                <h6><a href="#">{{prod.produto_nome}}</a></h6>
+                                <h6><a href="{{prod.get_url}}">{{prod.produto_nome}}</a></h6>
                                 {% if prod.promocao_valor_porcentagem %}
                                 <h5>
                                     R${{ prod.preco_com_desconto|floatformat:2 }} 
