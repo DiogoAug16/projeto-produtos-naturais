@@ -5,6 +5,49 @@
     padding-top: 80px;
 }
 
+.cep-input-container {
+    position: relative; /* This is crucial for positioning the button absolutely within it */
+    display: flex; /* Helps manage the input and button alignment if needed, though not strictly necessary for this absolute positioning */
+    width: fit-content;
+}
+
+.cep-input-container .form-control {
+    /* Make space on the right side of the input field for the button */
+    /* Adjust this padding-right value based on the button's text width and desired spacing */
+    padding-right: 90px;
+    /* Ensure the input field takes up the available width if not already by form-control */
+    // width: 100%;
+}
+
+.calculate-btn-inside {
+    position: absolute;         /* Position it relative to the .cep-input-container */
+    right: 5px;                /* Distance from the right edge of the container */
+    top: 50%;                   /* Position it halfway down from the top */
+    transform: translateY(-50%); /* Vertically center it perfectly */
+    background-color: transparent;
+    border: none;
+    color: #4A4A4A; /* Adjust text color as needed, this is a medium gray */
+    cursor: pointer;
+    padding: 0 10px; /* Add a little horizontal padding if needed */
+    font-weight: bold;          /* Make text bold like in the reference */
+    /* text-transform: uppercase; /* Already done in HTML, but could be enforced here */
+    /* If you had 'primary-btn' class also, you might need to override its styles: */
+    /* box-shadow: none; */
+    align-items: center;
+    display: flex;
+}
+
+/* Optional: Style for hover/focus to give user feedback */
+.calculate-btn-inside:hover {
+    color: #007bff; /* Example hover color */
+}
+
+.calculate-btn-inside:focus {
+    outline: none; /* Remove default focus outline if desired */
+    /* Add a custom focus style if needed for accessibility */
+    /* color: #0056b3; */
+}
+
 .product__details__pic__item {
     margin-bottom: 20px;
 

@@ -1,8 +1,11 @@
+from ast import expr
 from departamento.models import Departamento
 from categoria.models import Categoria
 from produto.models import Produto
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+import requests
 
 def visualizarLoja(request, departamento_slug=None, categoria_slug=None):
     departamento = None
@@ -64,4 +67,38 @@ def  visualizarDetalheProduto (request, categoria_slug, produto_slug, departamen
 
     return render(request, 'shop-details.html', context)
     
+def calcularFrete(request):
+    cep = request.GET.get('cep')
+
+    if not cep or len(cep) != 8:
+        return JsonResponse({'erro': 'CEP inválido'}, status=400)
+
+    try:
+        response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
+        data = response.json()
+        
+        if data.get('erro'):
+            return JsonResponse({'erro': 'CEP não encontrado'}, status=404)
+        
+        uf = data.get('uf', '')
+
+        precos_frete = {
+            'SP': 10.0,
+            'RJ': 12.0,
+            'MG': 14.0,
+            'RS': 18.0,
+            'MT': "Gratis",
+            'DEFAULT': 25.0,
+        }
+
+        
+        valor = precos_frete.get(uf, precos_frete['DEFAULT'])
+        if isinstance(valor, (int,float)):
+            valor_formatado = f'R${valor:.2f}'
+        else:
+            valor_formatado = str(valor)
+            
+        return JsonResponse({'valor_frete': valor_formatado, 'uf': uf})
+    except Exception:
+        return JsonResponse({'erro': 'Erro ao consultar o CEP'}, status=500)
     
