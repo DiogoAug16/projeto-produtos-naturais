@@ -1,13 +1,16 @@
 from ast import expr
+from decimal import Decimal
+import keyword
 from departamento.models import Departamento
 from categoria.models import Categoria
 from produto.models import Produto
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
+from django.db.models import *
 import requests
 
-def visualizarLoja(request, departamento_slug=None, categoria_slug=None):
+def visualizarLoja(request, departamento_slug=None, categoria_slug=None, keyword=None):
     departamento = None
     categoria = None
     produtos_list = Produto.objects.filter(esta_disponivel=True)
@@ -22,6 +25,14 @@ def visualizarLoja(request, departamento_slug=None, categoria_slug=None):
         produtos_list = produtos_list.filter(categoria=categoria, esta_disponivel = True)
     else: 
         produtos_list = produtos_list.filter(esta_disponivel = True)
+            
+    if not keyword:
+        keyword = request.GET.get('keyword')
+        
+    if keyword:
+        query = Q(produto_nome__icontains=keyword)
+        produtos_list = produtos_list.filter(query)
+        
 
     preco_min = request.GET.get('preco_min')
     preco_max = request.GET.get('preco_max')
@@ -31,10 +42,22 @@ def visualizarLoja(request, departamento_slug=None, categoria_slug=None):
         produtos_list = produtos_list.filter(preco__lte=preco_max)
 
     ordenar = request.GET.get('ordenar')
+    
+    produtos_list = produtos_list.annotate(
+    preco_efetivo=Case(
+        When(
+            promocao_disponivel=True, 
+            then=F('preco') - (F('preco') * F('promocao_valor_porcentagem') / Decimal('100.0')),
+        ),
+        default=F('preco'),
+        output_field=DecimalField()
+        )
+    )
+    
     if ordenar == 'preco_crescente':
-        produtos_list = produtos_list.order_by('preco')
+        produtos_list = produtos_list.order_by('preco_efetivo')
     elif ordenar == 'preco_decrescente':
-        produtos_list = produtos_list.order_by('-preco')
+        produtos_list = produtos_list.order_by('-preco_efetivo')
 
     paginator = Paginator(produtos_list, 9)
     pagina_num = request.GET.get('page')
@@ -54,7 +77,8 @@ def visualizarLoja(request, departamento_slug=None, categoria_slug=None):
         'produtos_promocao': produtos_promocao,
         'preco_min': preco_min,
         'preco_max': preco_max,
-        'opcoes': Categoria.objects.all(),  # aqui
+        'opcoes': Categoria.objects.all(),
+        'keyword': keyword
     }
 
     return render(request, 'shop-grid.html', context)

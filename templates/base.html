@@ -53,7 +53,9 @@
     <script>
         window.onload = function() {
             const url = new URL(window.location.href);
-            if (url.searchParams.has("page")) {
+            // const path = url.pathname;
+            // path.includes("busca");
+            if (url.searchParams.has("pagina")) {
                 const produtos = document.getElementById("produtos_inicio");
                 if (produtos) {
                     produtos.scrollIntoView({ behavior: "smooth" });
@@ -169,7 +171,7 @@
 
             const cep = cepInput.value.replace(/\D/g, '');
 
-            fetch(`/shop/calcular-frete/?cep=${cep}`)
+            fetch(`/loja/calcular-frete/?cep=${cep}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.valor_frete) {
@@ -184,7 +186,28 @@
                 });
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.getElementById('search-form');
+            
+            if (searchForm) {
+                searchForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    
+                    const searchInput = document.getElementById('search-input');
+                    const keyword = searchInput.value.trim();
+                    
+                    if (keyword) {
+                        const currentParams = window.location.search;
 
+                        const newUrl = `/loja/busca/${encodeURIComponent(keyword)}/${currentParams}`;
+                        
+                        window.location.href = newUrl;
+                    }
+                });
+            }
+        });
+        </script>
             
 </body>
 
