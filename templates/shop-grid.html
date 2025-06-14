@@ -27,12 +27,12 @@
                 <div class="sidebar">
                     <div class="sidebar__item">
                         <h4>Departamentos</h4>
-                        {% for dept in opcoes_departamento %}
                         <ul>
+                        {% for dept in opcoes_departamento %}
                             <li><a href="{{dept.get_url}}">{{dept.nome}}</a></li>
+                        {% endfor %}
                         </ul>
                         
-                        {% endfor %}
                     </div>
                     <div class="sidebar__item">
                         <h4>Preço</h4>
@@ -55,7 +55,7 @@
                                     </div>
                                     <div class="price-box">
                                         <span class="currency">R$</span>
-                                        <input type="text" id="minamount" name="preco_min" placeholder="Min">
+                                        <input type="text" id="minamount" name="preco_min" placeholder="Min" value="{{ preco_min|default:"0" }}">
                                     </div>
                                 </div>
                             
@@ -69,7 +69,7 @@
                                     </div>
                                     <div class="price-box">
                                         <span class="currency">R$</span>
-                                        <input type="text" id="maxamount" name="preco_max" placeholder="Max">
+                                        <input type="text" id="maxamount" name="preco_max" placeholder="Max" value="{{ preco_max|default:"500" }}">
                                     </div>
                                 </div>
                             </div>                                      
@@ -119,11 +119,20 @@
                             <div class="filter__sort d-flex align-items-center gap-2">
                                 <span class="me-2">Ordenar por</span>
                                 <form method="get" id="filtro-preco-form" class="m-0">
+                                    <input type="hidden" name="preco_min" value="{{ request.GET.preco_min|default:"0" }}">
+                                    <input type="hidden" name="preco_max" value="{{ request.GET.preco_max|default:"500" }}">
+                                    <input type="hidden" name="pagina" value="{{ request.GET.pagina|default:"1" }}">
                                     <select name="ordenar" class="form-select form-select-sm" onchange="document.getElementById('filtro-preco-form').submit();">
-                                        <option value="preco_crescente" {% if request.GET.ordenar == 'preco_crescente' %}selected{% endif %}>
+                                        <option value="preco_crescente" 
+                                        {% if request.GET.ordenar == 'preco_crescente' %}
+                                        selected
+                                        {% endif %}>
                                             Preço crescente
                                         </option>
-                                        <option value="preco_decrescente" {% if request.GET.ordenar == 'preco_decrescente' %}selected{% endif %}>
+                                        <option value="preco_decrescente" 
+                                        {% if request.GET.ordenar == 'preco_decrescente' %}
+                                        selected
+                                        {% endif %}>
                                             Preço decrescente
                                         </option>
                                     </select>
@@ -187,7 +196,7 @@
                 <div class="product__pagination">
                     {% if produtos.has_previous %}
                         {% with produtos.previous_page_number as prev_page %}
-                            <a href="?page={{ prev_page }}{% if request.GET.ordenar %}&ordenar={{ request.GET.ordenar }}{% endif %}">
+                            <a href="?pagina={{ prev_page }}{% if request.GET.ordenar %}&ordenar={{ request.GET.ordenar }}{% endif %}">
                                 <i class="fa fa-long-arrow-left"></i>
                             </a>
                         {% endwith %}
@@ -195,21 +204,21 @@
                     
                     {% for num in produtos.paginator.page_range %}
                         {% if produtos.number == num %}
-                            <a class="active" href="?page={{ num }}{% if request.GET.ordenar %}&ordenar={{ request.GET.ordenar }}{% endif %}">{{ num }}</a>
+                            <a class="active" href="?pagina={{ num }}{% if request.GET.ordenar %}&ordenar={{ request.GET.ordenar }}{% endif %}">{{ num }}</a>
                         {% else %}
-                            <a href="?page={{ num }}{% if request.GET.ordenar %}&ordenar={{ request.GET.ordenar }}{% endif %}">{{ num }}</a>
+                            <a href="?pagina={{ num }}{% if request.GET.ordenar %}&ordenar={{ request.GET.ordenar }}{% endif %}">{{ num }}</a>
                         {% endif %}
                     {% endfor %}
             
                     {% if produtos.has_next %}
                             {% with produtos.next_page_number as next_page %}
-                                <a href="?page={{ next_page }}{% if request.GET.ordenar %}&ordenar={{ request.GET.ordenar }}{% endif %}">
+                                <a href="?pagina={{ next_page }}{% if request.GET.ordenar %}&ordenar={{ request.GET.ordenar }}{% endif %}">
                                     <i class="fa fa-long-arrow-right"></i>
                                 </a>
                             {% endwith %}
                     {% endif %}
                 </div>
-            {% endif %}
+                {% endif %}
             
             </div>
         </div>
