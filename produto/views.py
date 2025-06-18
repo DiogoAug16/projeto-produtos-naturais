@@ -60,7 +60,7 @@ def visualizarLoja(request, departamento_slug=None, categoria_slug=None, keyword
         produtos_list = produtos_list.order_by('-preco_efetivo')
 
     paginator = Paginator(produtos_list, 9)
-    pagina_num = request.GET.get('page')
+    pagina_num = request.GET.get('pagina')
     produtos = paginator.get_page(pagina_num)
 
     produtos_promocao = Produto.objects.filter(
@@ -78,7 +78,7 @@ def visualizarLoja(request, departamento_slug=None, categoria_slug=None, keyword
         'preco_min': preco_min,
         'preco_max': preco_max,
         'opcoes': Categoria.objects.all(),
-        'keyword': keyword
+        'keyword': keyword,
     }
 
     return render(request, 'shop-grid.html', context)

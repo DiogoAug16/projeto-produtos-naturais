@@ -12,6 +12,7 @@ class Produto(models.Model):
     descricao = models.CharField(max_length=1000, blank=True)
     slug = models.SlugField(max_length=100, unique=True)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    imposto = models.DecimalField(max_digits=5, decimal_places=2, null=True)
     preco = models.DecimalField(max_digits=10, decimal_places=2)
     estoque = models.IntegerField(default=0)
     esta_disponivel = models.BooleanField(default=True)
