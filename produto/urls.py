@@ -10,7 +10,4 @@ urlpatterns = [
     path('departamento/<slug:departamento_slug>/categoria/<slug:categoria_slug>/<slug:produto_slug>/', views.visualizarDetalheProduto, name='visualizarDetalheProduto'),
     path('calcular-frete/', views.calcularFrete, name='calcularFrete'),
     path('busca/<str:keyword>/', views.visualizarLoja, name='search_by_keyword'),
-    path('busca/', views.visualizarLoja, name='search_base'),
-
-
 ]
