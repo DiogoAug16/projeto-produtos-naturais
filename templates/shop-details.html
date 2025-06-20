@@ -60,7 +60,7 @@
                             </div>
                         </div>
                     </div>
-                    <a href="#" class="primary-btn">Adicionar no carrinho</a>
+                    <a href="{%url 'adicionarCarrinho' produto.id %}" class="primary-btn">Adicionar no carrinho</a>
                     <a href="#" class="heart-icon"><span class="icon_heart_alt"></span></a>
                     <ul>
                         {%if produto.esta_disponivel and produto.estoque > 1 %}

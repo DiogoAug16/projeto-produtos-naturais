@@ -18,8 +18,12 @@ def visualizarCarrinho(request, total = 0, quantidade = 0, car_items = None, imp
         car = Carrinho.objects.get(car_id = getCarId(request))
         car_items = CarItem.objects.filter(carrinho = car, esta_disponivel = True)
         for item in car_items:
-            total += (item.produto.preco * item.quantidade)
-            imposto = (item.produto.preco * item.quantidade) * (item.produto.imposto/100)
+            if item.produto.promocao_disponivel and item.produto.promocao_valor_porcentagem > 0:
+                total += (item.produto.preco_com_desconto() * item.quantidade)
+                imposto += (item.produto.preco_com_desconto() * item.quantidade) * (item.produto.imposto/100)
+            else:
+                total += (item.produto.preco * item.quantidade)
+                imposto += (item.produto.preco * item.quantidade) * (item.produto.imposto/100)
             total_com_imposto = total + imposto
             quantidade += item.quantidade
     except ObjectDoesNotExist:
