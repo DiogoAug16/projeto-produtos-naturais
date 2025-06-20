@@ -80,21 +80,25 @@
                     }
 
                     &.shoping__cart__quantity {
-                        width: 225px;
-
+                        text-align: center;
+                        
                         .pro-qty {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
                             width: 120px;
                             height: 40px;
-
+                            
                             input {
                                 color: $normal-color;
-
+                                
                                 &::placeholder {
                                     color: $normal-color;
                                 }
                             }
-
+                            
                             .qtybtn {
+                                display: none;
                                 width: 15px;
                             }
                         }
