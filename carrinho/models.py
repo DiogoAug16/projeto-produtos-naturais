@@ -15,4 +15,8 @@ class CarItem(models.Model):
     esta_disponivel = models.BooleanField(default=True)
     
     def getSubTotal(self):
-        return self.produto.preco * self.quantidade
+        if self.produto.promocao_disponivel and self.produto.promocao_valor_porcentagem > 0:
+            preco_com_desconto = self.produto.preco_com_desconto()
+            return preco_com_desconto * self.quantidade
+        else:
+            return self.produto.preco * self.quantidade
