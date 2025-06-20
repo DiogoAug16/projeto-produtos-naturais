@@ -68,6 +68,7 @@ TEMPLATES = [
                 'categoria.context_processors.menu_categoria',
                 'departamento.context_processors.menu_departamento',
                 'carrinho.context_processors.contador',
+                'carrinho.context_processors.valorTotalCarrinho',
             ],
         },
     },
