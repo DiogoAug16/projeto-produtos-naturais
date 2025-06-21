@@ -1,5 +1,4 @@
 from decimal import Decimal
-import re
 from django.db import models
 from django.urls import reverse
 
@@ -22,6 +21,7 @@ class Produto(models.Model):
     def preco_com_desconto(self):
         if self.promocao_disponivel and self.promocao_valor_porcentagem > 0:
             return self.preco - (self.preco * (self.promocao_valor_porcentagem / Decimal('100')))
+        return self.preco
 
     def __str__(self):
         return self.produto_nome
