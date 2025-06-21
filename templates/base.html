@@ -53,8 +53,6 @@
     <script>
         window.onload = function() {
             const url = new URL(window.location.href);
-            // const path = url.pathname;
-            // path.includes("busca");
             if (url.searchParams.has("pagina")) {
                 const produtos = document.getElementById("produtos_inicio");
                 if (produtos) {
