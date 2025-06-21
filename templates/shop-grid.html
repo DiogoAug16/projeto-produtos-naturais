@@ -177,7 +177,7 @@
                                 <h6><a href="{{prod.get_url}}">{{prod.produto_nome}}</a></h6>
                                 {% if prod.promocao_disponivel %}
                                 <h5>
-                                    R${{ prod.preco_com_desconto|floatformat:2 }} 
+                                    R${{ prod.preco_efetivo|floatformat:2 }} 
                                     <span class="text-muted" style="text-decoration: line-through;">R${{ prod.preco|floatformat:2 }}</span>
                                 </h5>
                                 {% else %}
