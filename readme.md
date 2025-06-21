@@ -1,1 +1,1 @@
-Desenvolvimento de um site de produtos naturais
+Desenvolvimento de um site ecommerce de produtos naturais
