@@ -1,6 +1,5 @@
 from ast import expr
 from decimal import Decimal
-import keyword
 from departamento.models import Departamento
 from categoria.models import Categoria
 from produto.models import Produto
@@ -10,7 +9,7 @@ from django.http import JsonResponse
 from django.db.models import *
 import requests
 
-def visualizarLoja(request, departamento_slug=None, categoria_slug=None, keyword=None):
+def visualizar_loja(request, departamento_slug=None, categoria_slug=None):
     departamento = None
     categoria = None
     produtos_list = Produto.objects.filter(esta_disponivel=True)
@@ -22,46 +21,9 @@ def visualizarLoja(request, departamento_slug=None, categoria_slug=None, keyword
 
     if categoria_slug:
         categoria = get_object_or_404(Categoria, slug=categoria_slug)
-        produtos_list = produtos_list.filter(categoria=categoria, esta_disponivel = True)
-    else: 
-        produtos_list = produtos_list.filter(esta_disponivel = True)
-            
-    if not keyword:
-        keyword = request.GET.get('keyword')
-        
-    if keyword:
-        query = Q(produto_nome__icontains=keyword)
-        produtos_list = produtos_list.filter(query)
-        
+        produtos_list = produtos_list.filter(categoria=categoria)
 
-    preco_min = request.GET.get('preco_min')
-    preco_max = request.GET.get('preco_max')
-    if preco_min:
-        produtos_list = produtos_list.filter(preco__gte=preco_min)
-    if preco_max:
-        produtos_list = produtos_list.filter(preco__lte=preco_max)
-
-    ordenar = request.GET.get('ordenar')
-    
-    produtos_list = produtos_list.annotate(
-    preco_efetivo=Case(
-        When(
-            promocao_disponivel=True, 
-            then=F('preco') - (F('preco') * F('promocao_valor_porcentagem') / Decimal('100.0')),
-        ),
-        default=F('preco'),
-        output_field=DecimalField()
-        )
-    )
-    
-    if ordenar == 'preco_crescente':
-        produtos_list = produtos_list.order_by('preco_efetivo')
-    elif ordenar == 'preco_decrescente':
-        produtos_list = produtos_list.order_by('-preco_efetivo')
-
-    paginator = Paginator(produtos_list, 9)
-    pagina_num = request.GET.get('pagina')
-    produtos = paginator.get_page(pagina_num)
+    produtos, paginator = filtrar_produtos(request, produtos_list)
 
     produtos_promocao = Produto.objects.filter(
         esta_disponivel=True,
@@ -75,15 +37,43 @@ def visualizarLoja(request, departamento_slug=None, categoria_slug=None, keyword
         'departamento_atual': departamento,
         'categoria_atual': categoria,
         'produtos_promocao': produtos_promocao,
-        'preco_min': preco_min,
-        'preco_max': preco_max,
+        'preco_min': request.GET.get('preco_min'),
+        'preco_max': request.GET.get('preco_max'),
+        'ordenar': request.GET.get('ordenar'),
         'opcoes': Categoria.objects.all(),
-        'keyword': keyword,
     }
 
     return render(request, 'shop-grid.html', context)
 
-def  visualizarDetalheProduto (request, categoria_slug, produto_slug, departamento_slug):
+
+def buscar_produtos(request, keyword):
+    produtos_list = Produto.objects.filter(
+        esta_disponivel=True,
+        produto_nome__icontains=keyword
+    )
+
+    produtos, paginator = filtrar_produtos(request, produtos_list)
+
+    produtos_promocao = Produto.objects.filter(
+        esta_disponivel=True,
+        promocao_disponivel=True,
+        promocao_valor_porcentagem__gt=0,
+    )
+
+    context = {
+        'produtos': produtos,
+        'produto_quant': paginator.count,
+        'keyword': keyword,
+        'preco_min': request.GET.get('preco_min'),
+        'preco_max': request.GET.get('preco_max'),
+        'ordenar': request.GET.get('ordenar'),
+        'produtos_promocao': produtos_promocao,
+        'opcoes': Categoria.objects.all(),
+    }
+
+    return render(request, 'shop-grid.html', context)
+
+def visualizar_detalhe_produto (request, categoria_slug, produto_slug, departamento_slug):
     produto = Produto.objects.get(slug = produto_slug, categoria__slug = categoria_slug)
     context = {
         'produto': produto,
@@ -91,7 +81,7 @@ def  visualizarDetalheProduto (request, categoria_slug, produto_slug, departamen
 
     return render(request, 'shop-details.html', context)
     
-def calcularFrete(request):
+def calcular_frete(request):
     cep = request.GET.get('cep')
 
     if not cep or len(cep) != 8:
@@ -114,7 +104,6 @@ def calcularFrete(request):
             'MT': "Gratis",
             'DEFAULT': 25.0,
         }
-
         
         valor = precos_frete.get(uf, precos_frete['DEFAULT'])
         if isinstance(valor, (int,float)):
@@ -125,4 +114,40 @@ def calcularFrete(request):
         return JsonResponse({'valor_frete': valor_formatado, 'uf': uf})
     except Exception:
         return JsonResponse({'erro': 'Erro ao consultar o CEP'}, status=500)
+
+def filtrar_produtos(request, queryset):
+    preco_min = request.GET.get('preco_min')
+    preco_max = request.GET.get('preco_max')
+    ordenar = request.GET.get('ordenar')
+
+    if preco_min:
+        queryset = queryset.filter(preco__gte=preco_min)
+    if preco_max:
+        queryset = queryset.filter(preco__lte=preco_max)
+
+    queryset = queryset.annotate(
+        preco_efetivo=ExpressionWrapper(
+            Case(
+                When(
+                    promocao_disponivel=True,
+                    then=F('preco') * (Value(1) - F('promocao_valor_porcentagem') / Value(100.0))
+                ),
+                default=F('preco'),
+                output_field=DecimalField(max_digits=10, decimal_places=2)
+            ),
+            output_field=DecimalField(max_digits=10, decimal_places=2)
+        )
+    )
+
+    if ordenar == 'preco_crescente':
+        queryset = queryset.order_by('preco_efetivo')
+    elif ordenar == 'preco_decrescente':
+        queryset = queryset.order_by('-preco_efetivo')
+
+    paginator = Paginator(queryset, 9)
+    pagina_num = request.GET.get('pagina')
+    produtos = paginator.get_page(pagina_num)
+
+    return produtos, paginator
+
     
