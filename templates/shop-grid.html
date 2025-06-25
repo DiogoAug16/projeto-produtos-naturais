@@ -32,7 +32,6 @@
                             <li><a href="{{dept.get_url}}">{{dept.nome}}</a></li>
                         {% endfor %}
                         </ul>
-                        
                     </div>
                     <div class="sidebar__item">
                         <h4>Preço</h4>
@@ -102,7 +101,7 @@
                                     <div class="product__discount__item__text">
                                         <h5><a href="{{prod.get_url}}">{{prod.produto_nome}}</a></h5>
                                         <div class="product__item__price">
-                                            R${{prod.preco_efetivo|floatformat:2}} 
+                                            R${{prod.preco_com_desconto|floatformat:2}} 
                                             <span>R${{prod.preco|floatformat:2}}</span>
                                         </div>
                                     </div>
