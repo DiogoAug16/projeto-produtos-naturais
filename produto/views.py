@@ -29,7 +29,7 @@ def visualizar_loja(request, departamento_slug=None, categoria_slug=None):
         esta_disponivel=True,
         promocao_disponivel=True,
         promocao_valor_porcentagem__gt=0,
-    )
+    ).order_by('?')[:9]
 
     context = {
         'produtos': produtos,
