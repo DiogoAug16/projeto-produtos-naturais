@@ -40,6 +40,7 @@ def visualizarCarrinho(request, total = 0, quantidade = 0, car_items = None, imp
 
 def adicionarItemCarrinho(request, produto_id):
     produto = Produto.objects.get(id=produto_id)
+    quantidade = int(request.POST.get('quantidade', 1))
     try:
         carrinho = Carrinho.objects.get(car_id = getCarId(request))
     except Carrinho.DoesNotExist:
@@ -50,12 +51,12 @@ def adicionarItemCarrinho(request, produto_id):
 
     try:
         car_item = CarItem.objects.get(produto=produto, carrinho=carrinho)
-        car_item.quantidade += 1
+        car_item.quantidade += quantidade
         car_item.save()
     except CarItem.DoesNotExist:
         car_item = CarItem.objects.create(
             produto = produto,
-            quantidade = 1,
+            quantidade = quantidade,
             carrinho = carrinho,
         )
         car_item.save()
