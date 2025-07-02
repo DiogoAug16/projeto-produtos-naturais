@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'produto',
     'categoria',
     'departamento',  
-    'carrinho',  
+    'carrinho',
+    'favoritos',  
 ]
 
 MIDDLEWARE = [
