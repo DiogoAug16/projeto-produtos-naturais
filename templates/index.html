@@ -10,11 +10,15 @@
     <div class="container">
         <div class="row">
             <div class="categories__slider owl-carousel">
+                {% for dept in departamentos %}
                 <div class="col-lg-3">
-                    <div class="categories__item set-bg" data-setbg="{% static "img/categories/cat-1.jpg" %}">
-                        <h5><a href="#">Fresh Fruit</a></h5>
+                    <a href="{{dept.get_url}}">
+                    <div class="categories__item set-bg" data-setbg="{{dept.departamento_imagem.url}}">
+                        <h5>{{dept.nome}}</h5>
                     </div>
+                    </a>
                 </div>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -32,26 +36,41 @@
                 <div class="featured__controls">
                     <ul>
                         <li class="active" data-filter="*">Todos</li>
-                        <li data-filter=".oranges">Grãos</li>
+                        {% for cat in opcoes_cat_random %}
+                        <li data-filter=".{{cat.slug}}">{{cat.categoria_nome}}</li>
+                        {%endfor%}
                     </ul>
                 </div>
             </div>
         </div>
         <div class="row featured__filter">
-            <div class="col-lg-3 col-md-4 col-sm-6 mix fastfood vegetables">
+            {%for prod in produto_destaque %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mix {{ prod.categoria.slug }}">
                 <div class="featured__item">
-                    <div class="featured__item__pic set-bg" data-setbg="{% static "img/featured/feature-8.jpg" %}">
+                    <div class="featured__item__pic">
+                        <a href="{{ prod.get_url }}">
+                            <img src="{{ prod.produto_imagem.url }}" alt="{{ prod.produto_nome }}">
+                        </a>
                         <ul class="featured__item__pic__hover">
                             <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                            <li><a href="{%url 'adicionarCarrinho' prod.id %}"><i class="fa fa-shopping-cart"></i></a></li>
                         </ul>
                     </div>
+
                     <div class="featured__item__text">
-                        <h6><a href="#">Crab Pool Security</a></h6>
-                        <h5>$30.00</h5>
+                        <h6><a href="{{prod.get_url}}">{{prod.produto_nome}}</a></h6>
+                        {% if prod.promocao_disponivel %}
+                            <h5>
+                                R${{ prod.preco_efetivo|floatformat:2 }} 
+                                <span class="text-muted" style="text-decoration: line-through;">R${{ prod.preco|floatformat:2 }}</span>
+                            </h5>
+                        {% else %}
+                            <h5>R${{ prod.preco|floatformat:2 }}</h5>
+                        {% endif %}
                     </div>
                 </div>
             </div>
+            {%endfor%}
         </div>
     </div>
 </section>
