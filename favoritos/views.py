@@ -13,10 +13,12 @@ def getFavId(request):
         favSession = request.session.create()
     return favSession
 
-def visualizarFavorito(request):
+def visualizarFavorito(request, quantidade = 0, fav_items = None):
     try:
         fav = Favoritos.objects.get(fav_id = getFavId(request))
         fav_items = FavItem.objects.filter(favorito = fav, esta_disponivel = True)
+        for item in fav_items:
+            quantidade += item.quantidade
     except ObjectDoesNotExist:
         pass
     
