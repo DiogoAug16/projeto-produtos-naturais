@@ -141,6 +141,9 @@ def filtrar_produtos(request, queryset):
         queryset = queryset.order_by('preco_efetivo')
     elif ordenar == 'preco_decrescente':
         queryset = queryset.order_by('-preco_efetivo')
+    else:
+        queryset = queryset.order_by('produto_nome')
+
 
     paginator = Paginator(queryset, 9)
     pagina_num = request.GET.get('pagina')
