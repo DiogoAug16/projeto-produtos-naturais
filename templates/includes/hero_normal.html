@@ -11,7 +11,7 @@
                         <span>Categorias</span>
                     </div>
                     <ul>    
-                        {%for cat in opcoes%}
+                        {%for cat in opcoes_cat%}
                         <li><a href="{{cat.get_url}}">{{cat.categoria_nome}}</a></li>
                         {%endfor%}
                     </ul>
