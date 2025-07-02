@@ -12,3 +12,4 @@ class FavItem(models.Model):
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
     favoritos = models.ForeignKey(Favoritos, on_delete=models.CASCADE, null=True)
     esta_disponivel = models.BooleanField(default=True)
+    quantidade = models.IntegerField(default=0)
