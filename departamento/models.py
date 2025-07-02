@@ -5,6 +5,7 @@ from django.urls import reverse
 class Departamento(models.Model):
     nome = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True)
+    departamento_imagem = models.ImageField(upload_to='fotos/departamentos', blank=True)
     
     def __str__(self):
         return self.nome
