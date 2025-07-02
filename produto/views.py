@@ -40,7 +40,6 @@ def visualizar_loja(request, departamento_slug=None, categoria_slug=None):
         'preco_min': request.GET.get('preco_min'),
         'preco_max': request.GET.get('preco_max'),
         'ordenar': request.GET.get('ordenar'),
-        'opcoes': Categoria.objects.all(),
     }
 
     return render(request, 'shop-grid.html', context)
@@ -68,7 +67,6 @@ def buscar_produtos(request, keyword):
         'preco_max': request.GET.get('preco_max'),
         'ordenar': request.GET.get('ordenar'),
         'produtos_promocao': produtos_promocao,
-        'opcoes': Categoria.objects.all(),
     }
 
     return render(request, 'shop-grid.html', context)
