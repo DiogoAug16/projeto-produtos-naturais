@@ -68,3 +68,22 @@ def removerTodosFavoritos(request):
     except Favoritos.DoesNotExist:
         pass
     return redirect('favoritos')
+
+def toggleFavorito(request, produto_id):
+    if request.method == 'POST':
+        fav_id = getFavId(request)
+        produto = get_object_or_404(Produto, id=produto_id)
+
+        favoritos, _ = Favoritos.objects.get_or_create(fav_id=fav_id)
+        fav_item = FavItem.objects.filter(favoritos=favoritos, produto=produto).first()
+
+        if fav_item:
+            fav_item.delete()
+        else:
+            FavItem.objects.create(favoritos=favoritos, produto=produto)
+
+        return redirect(to=request.META.get('HTTP_REFERER', 'favoritos'))
+    else:
+        return redirect('favoritos')
+
+

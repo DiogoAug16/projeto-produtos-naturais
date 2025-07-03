@@ -53,18 +53,29 @@
                     <div class="product__details__price">R${{produto.preco}}</div>
                     {% endif %}
                     <p>{{produto.descricao}}</p>
-                    <form method="POST" action="{% url 'adicionarCarrinho' produto.id %}">
-                        {% csrf_token %}
-                        <div class="product__details__quantity">
-                            <div class="quantity">
-                                <div class="pro-qty">
-                                    <input type="text" name="quantidade" value="1" pattern="[1-9][0-9]*" title="Digite um número inteiro maior que zero">
+                    <div class="actions-wrapper" style="display: flex; align-items: center; gap: 10px;">
+                        <form method="POST" action="{% url 'adicionarCarrinho' produto.id %}">
+                            {% csrf_token %}
+                            <div class="product__details__quantity">
+                                <div class="quantity">
+                                    <div class="pro-qty">
+                                        <input type="text" name="quantidade" value="1" pattern="[1-9][0-9]*" title="Digite um número inteiro maior que zero">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <button type="submit" class="primary-btn">Adicionar no carrinho</button>
-                        <a href="#" class="heart-icon"><span class="icon_heart_alt"></span></a>
-                    </form>
+                            <button type="submit" class="primary-btn">Adicionar no carrinho</button>                  
+                        </form>
+                        <form method="POST" action="{% url 'toggleFavorito' produto.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="border:none; background:none; cursor:pointer;">
+                                {% if produto_esta_nos_favoritos %}
+                                    <span class="icon_heart" style="color:red;"></span>
+                                {% else %}
+                                    <span class="icon_heart_alt"></span>
+                                {% endif %}
+                            </button>
+                        </form> 
+                    </div>  
                     <ul>
                         {%if produto.esta_disponivel and produto.estoque > 1 %}
                         <li><b>Disponibilidade</b> <span>Em estoque</span></li>

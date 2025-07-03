@@ -11,7 +11,5 @@ urlpatterns = [
     path('adicionar_favorito/<int:produto_id>/', views.adicionarItemFavorito, name='adicionarFavorito'),
     path('remover_item_favorito/<int:produto_id>/', views.removerItemFavorito, name='removerItemFavorito'),
     path('remover_todos/', views.removerTodosFavoritos, name='removerTodosFavoritos'),
-
-
-
+    path('toggle_favorito/<int:produto_id>/', views.toggleFavorito, name='toggleFavorito'),
 ]
