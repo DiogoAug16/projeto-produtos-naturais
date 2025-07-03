@@ -11,6 +11,7 @@ def getCarId(request):
     carSession = request.session.session_key
     if not carSession:
         carSession = request.session.create()
+        carSession = request.session.session_key  # <- importante
     return carSession
 
 def visualizarCarrinho(request, total = 0, quantidade = 0, car_items = None, imposto = 0, total_com_imposto = 0):

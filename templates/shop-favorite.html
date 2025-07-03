@@ -2,6 +2,8 @@
 {% load static %}
 {% block  content %}
 
+<div class="favoritos-wrapper">
+
 {% include 'includes/hamburguer.html' %}
 {%include 'includes/hero_normal.html'%}
 
@@ -25,39 +27,50 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="shoping__cart__table">
-                        <table>
+                        <table class="favoritos-table">
                             <thead>
                                 <tr>
-                                    <th class="shoping__product">Produtos Favoritados</th>
-                                    <th></th>
+                                    <th class="favoritos__col-img text-center">Imagem</th>
+                                    <th class="favoritos__col-nome text-left">Produto</th>
+                                    <th class="favoritos__col-remover text-center">Remover</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {%for item in fav_items%}
+                                {% for item in fav_items %}
                                 <tr>
-                                    <td class="shoping__cart__item">
-                                        <img src="{{item.produto.produto_imagem.url}}" alt="" style="width: 180px; height: auto;">
-                                        <h5>{{item.produto.produto_nome}}</h5>
+                                    <td class="text-center">
+                                        <a href="{{ item.produto.get_url }}">
+                                            <img class="favoritos__img" src="{{ item.produto.produto_imagem.url }}"">
+                                        </a>
                                     </td>
-                                    <td class="shoping__cart__item__close">
-                                        <a href="{%url 'removerItemFavorito' item.produto.id%}"><span class="icon_close"></span></a>
-                                    </td>
+                                    <td class="text-left">
+                                        <a href="{{ item.produto.get_url }}">
+                                            <h5 class="favoritos__nome">{{ item.produto.produto_nome }}</h5>
+                                        </a>                                    </td>
+                                    <td class="text-center">
+                                        <a class="favoritos__remover" href="{% url 'removerItemFavorito' item.produto.id %}">
+                                            <div class="remover-bloco">
+                                                <span class="icon_close"></span>
+                                            </div>
+                                        </a>
+                                    </td>                                    
                                 </tr>
-                                </tr>
-                                {%endfor%}
+                                {% endfor %}
                             </tbody>
                         </table>
-                    </div>
+                    </div>                    
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-12">
                     <div class="shoping__cart__btns">
-                        <a href="#" class="primary-btn cart-btn">Retornar a loja</a>
+                        <a href="{%url 'shop'%}" class="primary-btn cart-btn">Retornar a loja</a>
+                        <a href="{% url 'removerTodosFavoritos' %}" style="float: right;" class="primary-btn cart-btn">Remover tudo</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
     <!-- Shoping Cart Section End -->
+</div>
 {% endblock %}
