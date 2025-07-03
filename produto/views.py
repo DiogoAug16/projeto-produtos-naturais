@@ -2,6 +2,8 @@ from ast import expr
 from decimal import Decimal
 from departamento.models import Departamento
 from categoria.models import Categoria
+from favoritos.models import FavItem, Favoritos
+from favoritos.views import getFavId
 from produto.models import Produto
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
@@ -71,13 +73,25 @@ def buscar_produtos(request, keyword):
 
     return render(request, 'shop-grid.html', context)
 
-def visualizar_detalhe_produto (request, categoria_slug, produto_slug, departamento_slug):
-    produto = Produto.objects.get(slug = produto_slug, categoria__slug = categoria_slug)
+def visualizar_detalhe_produto(request, categoria_slug, produto_slug, departamento_slug):
+    produto = get_object_or_404(Produto, slug=produto_slug, categoria__slug=categoria_slug)
+
+    fav_id = getFavId(request)
+    produto_esta_nos_favoritos = False
+
+    try:
+        favoritos = Favoritos.objects.get(fav_id=fav_id)
+        produto_esta_nos_favoritos = FavItem.objects.filter(favoritos=favoritos, produto=produto).exists()
+    except Favoritos.DoesNotExist:
+        pass
+
     context = {
         'produto': produto,
+        'produto_esta_nos_favoritos': produto_esta_nos_favoritos,
     }
 
     return render(request, 'shop-details.html', context)
+
     
 def calcular_frete(request):
     cep = request.GET.get('cep')
@@ -151,4 +165,3 @@ def filtrar_produtos(request, queryset):
 
     return produtos, paginator
 
-    
