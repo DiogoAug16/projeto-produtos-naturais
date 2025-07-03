@@ -70,6 +70,7 @@ TEMPLATES = [
                 'departamento.context_processors.menu_departamento',
                 'carrinho.context_processors.contador',
                 'carrinho.context_processors.valorTotalCarrinho',
+                'favoritos.context_processors.contador',
             ],
         },
     },

@@ -10,7 +10,7 @@ urlpatterns = [
     path('', views.visualizarCarrinho, name='carrinho'),
     path('adicionar_carrinho/<int:produto_id>/', views.adicionarItemCarrinho, name='adicionarCarrinho'),
     path('diminuir_qtde_carrinho/<int:produto_id>/', views.diminuirQuantidadeProdutoCarrinho, name='diminuirQuantidadeProdutoCarrinho'),
-    path('removerItemCarrinho/<int:produto_id>/', views.removerItemCarrinho, name='removerItemCarrinho'),
+    path('remover_item_carrinho/<int:produto_id>/', views.removerItemCarrinho, name='removerItemCarrinho'),
 
 
 ]

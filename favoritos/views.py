@@ -11,6 +11,7 @@ def getFavId(request):
     favSession = request.session.session_key
     if not favSession:
         favSession = request.session.create()
+        favSession = request.session.session_key
     return favSession
 
 def visualizarFavorito(request, fav_items = None, quantidade = 0):
@@ -50,21 +51,20 @@ def adicionarItemFavorito(request, produto_id):
         fav_item.save()
     return redirect('favoritos')
 
-def diminuirQuantidadeProdutoFavorito(request, produto_id):
-    fav = Favoritos.objects.get(car_id = getFavId(request))
-    produto = get_object_or_404(Produto, id=produto_id)
-    fav_item = FavItem.objects.get(produto=produto, favorito=fav)
-    if fav_item.quantidade > 1:
-        fav_item.quantidade -= 1
-        fav_item.save()
-    else:
+def removerItemFavorito(request, produto_id):
+    try:
+        fav = Favoritos.objects.get(fav_id=getFavId(request))
+        produto = get_object_or_404(Produto, id=produto_id)
+        fav_item = FavItem.objects.get(produto=produto, favoritos=fav)
         fav_item.delete()
+    except (Favoritos.DoesNotExist, FavItem.DoesNotExist):
+        pass
     return redirect('favoritos')
 
-def removerItemFavorito(request, produto_id):
-    fav = Favoritos.objects.get(fav_id = getFavId(request))
-    produto = get_object_or_404(Produto, id=produto_id)
-    fav_item = FavItem.objects.get(produto=produto, favoritos=fav)
-    if fav_item.quantidade >= 1:
-        fav_item.delete()
+def removerTodosFavoritos(request):
+    try:
+        fav = Favoritos.objects.get(fav_id=getFavId(request))
+        FavItem.objects.filter(favoritos=fav).delete()
+    except Favoritos.DoesNotExist:
+        pass
     return redirect('favoritos')
