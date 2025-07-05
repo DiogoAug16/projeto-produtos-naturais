@@ -57,7 +57,7 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://testesiteecommerceprogweb.azurewebsites.net',
+    'https://aplicacaoprogweb.azurewebsites.net',
 ]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
