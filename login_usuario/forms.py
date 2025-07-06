@@ -64,8 +64,8 @@ class RegistroForm(UserCreationForm):
     
 class LoginForm(AuthenticationForm):
     username = forms.CharField(
-        label=_("Email"),
-        widget=forms.TextInput(attrs={'autofocus': True, 'class': 'form-control', 'placeholder': 'Email'})
+        label=_("Email ou Usuário"),
+        widget=forms.TextInput(attrs={'autofocus': True, 'class': 'form-control', 'placeholder': 'Email ou Usuário'})
     )
     password = forms.CharField(
         label=_("Senha"),
