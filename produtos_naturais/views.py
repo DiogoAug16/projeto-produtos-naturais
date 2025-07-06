@@ -44,4 +44,4 @@ def home(request):
         'departamentos': Departamento.objects.all(),
     }
     
-    return render(request, 'index.html', context)
+    return render(request, 'loja/index.html', context)
