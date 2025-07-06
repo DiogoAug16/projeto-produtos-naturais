@@ -2,7 +2,9 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import CarItem, Carrinho
 from produto.models import Produto
+from django.contrib.auth.decorators import login_required
 
+@login_required(login_url='login')
 def _get_or_create_carrinho(request):
     if request.user.is_authenticated:
         carrinho, _ = Carrinho.objects.get_or_create(user=request.user)
@@ -13,6 +15,7 @@ def _get_or_create_carrinho(request):
         carrinho, _ = Carrinho.objects.get_or_create(car_id=session_key)
     return carrinho
 
+@login_required(login_url='login')
 def visualizarCarrinho(request, total=0, quantidade=0, imposto=0, total_com_imposto=0):
     car_items = []
     try:
@@ -34,6 +37,7 @@ def visualizarCarrinho(request, total=0, quantidade=0, imposto=0, total_com_impo
     }
     return render(request, 'loja/shoping-cart.html', context)
 
+@login_required(login_url='login')
 def adicionarItemCarrinho(request, produto_id):
     produto = get_object_or_404(Produto, id=produto_id)
     quantidade = int(request.POST.get('quantidade', 1))
