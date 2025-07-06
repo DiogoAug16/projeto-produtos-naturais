@@ -33,7 +33,6 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'aplicacaoprogweb.azurewebsites.net']
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home' 
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -133,6 +132,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    # 1. Tenta autenticar com nosso backend customizado (email ou username)
+    'login_usuario.backends.EmailOrUsernameBackend',
+    
+    # 2. Mantém o backend padrão como um fallback (importante para o admin do Django)
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
