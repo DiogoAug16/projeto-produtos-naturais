@@ -11,10 +11,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os # Adicione este import
+from dotenv import load_dotenv # Adicione este import
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -26,6 +29,9 @@ SECRET_KEY = 'django-insecure-bj4tx-3)6n3h^*sje&^e^p4-3(#w+0tw5jnvm_dfx#tev6yso-
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'aplicacaoprogweb.azurewebsites.net']
+
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home' 
 
 
 # Application definition
@@ -49,6 +55,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -75,9 +82,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'categoria.context_processors.menu_categoria',
                 'departamento.context_processors.menu_departamento',
-                'carrinho.context_processors.contador',
-                'carrinho.context_processors.valorTotalCarrinho',
-                'favoritos.context_processors.contador',
+                'carrinho.context_processors.menu_context',
             ],
         },
     },
@@ -132,14 +137,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Cuiaba'
 
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
