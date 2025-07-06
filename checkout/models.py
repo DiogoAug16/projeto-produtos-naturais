@@ -11,9 +11,6 @@ class Pedido(models.Model):
     class StatusPedido(models.TextChoices):
         PENDENTE = 'PENDENTE', 'Pendente'
         PAGO = 'PAGO', 'Pago'
-        ENVIADO = 'ENVIADO', 'Enviado'
-        ENTREGUE = 'ENTREGUE', 'Entregue'
-        CANCELADO = 'CANCELADO', 'Cancelado'
 
     # Relação com o usuário
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Usuário")
