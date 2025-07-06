@@ -1,89 +1,46 @@
+# favoritos/views.py
 from django.shortcuts import get_object_or_404, redirect, render
-
-from django.core.exceptions import ObjectDoesNotExist
-
-from favoritos.models import *
+from .models import *
 from produto.models import Produto
 
-# Create your views here.
+def _get_or_create_favoritos(request):
+    if request.user.is_authenticated:
+        favoritos, _ = Favoritos.objects.get_or_create(user=request.user)
+    else:
+        session_key = request.session.session_key
+        if not session_key:
+            session_key = request.session.create()
+        favoritos, _ = Favoritos.objects.get_or_create(fav_id=session_key)
+    return favoritos
 
-def getFavId(request):
-    favSession = request.session.session_key
-    if not favSession:
-        favSession = request.session.create()
-        favSession = request.session.session_key
-    return favSession
-
-def visualizarFavorito(request, fav_items = None, quantidade = 0):
+def visualizarFavorito(request):
+    fav_items = []
     try:
-        fav = Favoritos.objects.get(fav_id = getFavId(request))
-        fav_items = FavItem.objects.filter(favoritos = fav, esta_disponivel = True)
-        for item in fav_items:
-            quantidade += item.quantidade
-
-    except ObjectDoesNotExist:
+        favoritos = _get_or_create_favoritos(request)
+        fav_items = FavItem.objects.filter(favoritos=favoritos, esta_disponivel=True)
+    except Favoritos.DoesNotExist:
         pass
     
-    context = {
-        'fav_items': fav_items,
-    }
+    context = {'fav_items': fav_items}
+    return render(request, 'loja/shop-favorite.html', context)
+
+def toggleFavorito(request, produto_id):
+    produto = get_object_or_404(Produto, id=produto_id)
+    favoritos = _get_or_create_favoritos(request)
     
-    return render(request, 'shop-favorite.html', context)
+    fav_item, created = FavItem.objects.get_or_create(favoritos=favoritos, produto=produto)
+    if not created:
+        fav_item.delete()
 
-def adicionarItemFavorito(request, produto_id):
-    produto = Produto.objects.get(id=produto_id)
-    try:
-        favoritos = Favoritos.objects.get(fav_id = getFavId(request))
-    except Favoritos.DoesNotExist:
-        favoritos = Favoritos.objects.create(
-            fav_id = getFavId(request)
-        )
-    favoritos.save()
-
-    try:
-        fav_item = FavItem.objects.get(produto=produto, favoritos=favoritos)
-        fav_item.save()
-    except FavItem.DoesNotExist:
-        fav_item = FavItem.objects.create(
-            produto = produto,
-            favoritos=favoritos,
-        )
-        fav_item.save()
-    return redirect('favoritos')
+    return redirect(request.META.get('HTTP_REFERER', 'favoritos'))
 
 def removerItemFavorito(request, produto_id):
-    try:
-        fav = Favoritos.objects.get(fav_id=getFavId(request))
-        produto = get_object_or_404(Produto, id=produto_id)
-        fav_item = FavItem.objects.get(produto=produto, favoritos=fav)
-        fav_item.delete()
-    except (Favoritos.DoesNotExist, FavItem.DoesNotExist):
-        pass
+    favoritos = _get_or_create_favoritos(request)
+    produto = get_object_or_404(Produto, id=produto_id)
+    FavItem.objects.filter(favoritos=favoritos, produto=produto).delete()
     return redirect('favoritos')
 
 def removerTodosFavoritos(request):
-    try:
-        fav = Favoritos.objects.get(fav_id=getFavId(request))
-        FavItem.objects.filter(favoritos=fav).delete()
-    except Favoritos.DoesNotExist:
-        pass
+    favoritos = _get_or_create_favoritos(request)
+    FavItem.objects.filter(favoritos=favoritos).delete()
     return redirect('favoritos')
-
-def toggleFavorito(request, produto_id):
-    if request.method == 'POST':
-        fav_id = getFavId(request)
-        produto = get_object_or_404(Produto, id=produto_id)
-
-        favoritos, _ = Favoritos.objects.get_or_create(fav_id=fav_id)
-        fav_item = FavItem.objects.filter(favoritos=favoritos, produto=produto).first()
-
-        if fav_item:
-            fav_item.delete()
-        else:
-            FavItem.objects.create(favoritos=favoritos, produto=produto)
-
-        return redirect(to=request.META.get('HTTP_REFERER', 'favoritos'))
-    else:
-        return redirect('favoritos')
-
-
