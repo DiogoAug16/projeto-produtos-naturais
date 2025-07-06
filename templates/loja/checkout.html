@@ -288,7 +288,6 @@
                 confirmButtonColor: '#7fad39',
                 footer: `<a href="{% url 'home' %}" class="site-btn" style="background: #6f6f6f;">Voltar para a Home</a>`,
                 didOpen: () => {
-                    // Bônus: Aplicando máscaras aos campos do cartão
                     const cardNumberInput = document.getElementById('swal-card-number');
                     const cardExpiryInput = document.getElementById('swal-card-expiry');
                     const cardCvvInput = document.getElementById('swal-card-cvv');
