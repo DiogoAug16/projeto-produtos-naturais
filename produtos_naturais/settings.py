@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'aplicacaoprogweb.azurewebsites.net']
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home' 
+LOGIN_URL = '/login/'
 
 # Application definition
 

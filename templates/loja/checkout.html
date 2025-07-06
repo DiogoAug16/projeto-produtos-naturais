@@ -223,6 +223,16 @@
             })  
             .then(response => response.json())
             .then(data => {
+                if (data.status === 'unauthenticated') {
+                    Swal.fire(
+                        'Sessão expirada',
+                        'Você precisa estar logado para finalizar o pedido.',
+                        'warning'
+                    ).then(() => window.location.href = "/login/");
+                    return;
+                }
+
+                // continua se for sucesso
                 if (data.status === 'success') {
                     const metodoPagamento = document.querySelector('input[name="metodo_pagamento"]:checked').value;
                     if (metodoPagamento === 'PIX') {
