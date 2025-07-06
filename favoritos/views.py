@@ -7,9 +7,9 @@ def _get_or_create_favoritos(request):
     if request.user.is_authenticated:
         favoritos, _ = Favoritos.objects.get_or_create(user=request.user)
     else:
+        if not request.session.session_key:
+            request.session.create()
         session_key = request.session.session_key
-        if not session_key:
-            session_key = request.session.create()
         favoritos, _ = Favoritos.objects.get_or_create(fav_id=session_key)
     return favoritos
 
