@@ -214,7 +214,13 @@
             Swal.fire({ title: 'Processando seu pedido...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
 
             const formData = new FormData(form);
-            fetch("{% url 'checkout' %}", { method: 'POST', body: formData, headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') } })
+            fetch(window.location.origin + "{% url 'checkout' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })  
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
