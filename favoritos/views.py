@@ -1,8 +1,10 @@
 # favoritos/views.py
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
+from django.contrib.auth.decorators import login_required
 from produto.models import Produto
 
+@login_required(login_url='login')
 def _get_or_create_favoritos(request):
     if request.user.is_authenticated:
         favoritos, _ = Favoritos.objects.get_or_create(user=request.user)
@@ -13,6 +15,7 @@ def _get_or_create_favoritos(request):
         favoritos, _ = Favoritos.objects.get_or_create(fav_id=session_key)
     return favoritos
 
+@login_required(login_url='login')
 def visualizarFavorito(request):
     fav_items = []
     try:
@@ -24,6 +27,7 @@ def visualizarFavorito(request):
     context = {'fav_items': fav_items}
     return render(request, 'loja/shop-favorite.html', context)
 
+@login_required(login_url='login')
 def toggleFavorito(request, produto_id):
     produto = get_object_or_404(Produto, id=produto_id)
     favoritos = _get_or_create_favoritos(request)
