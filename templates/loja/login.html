@@ -1,0 +1,105 @@
+{% extends 'base_login.html' %}
+
+{% block content %}
+    <div class="container" id="container">
+      <!-- FORMULÁRIO DE CADASTRO -->
+      <div class="form-container sign-up-container">
+        <form method="post" action="{% url 'registro' %}">
+          {% csrf_token %}
+          <h1>Criar Conta</h1>
+          <div class="social-container">
+            <a href="#" class="social"><i class="fab fa fa-google-plus"></i></a>
+          </div>
+          <span>ou use seu email para registrar</span>
+
+          {% for field in registro_form %}
+            <div class="form-group">
+              {{ field }}
+            </div>
+          {% endfor %}  
+                
+          <button type="submit" class="btn btn-primary">Cadastrar</button>
+        </form>
+      </div>
+      <!-- FORMULÁRIO DE LOGIN -->
+      <div class="form-container sign-in-container">
+        <form method="post" action="{% url 'login' %}">
+          {% csrf_token %}
+          <h1>Fazer Login</h1>
+          <div class="social-container">
+            <a href="#" class="social"><i class="fab fa fa-google-plus"></i></a>
+          </div>
+          <span>ou use sua conta</span>
+          
+          {{ form.non_field_errors }}
+          <div class="form-group">
+            {{ form.username }}
+          </div>
+          <div class="form-group">
+            {{ form.password }}
+          </div>
+
+          <a href="#">Esqueceu sua senha?</a>
+          <button type="submit">Entrar</button>
+        </form>
+      </div>
+
+      <div class="overlay-container">
+        <div class="overlay">
+          <div class="overlay-panel overlay-left">
+            <h1>Bem Vindo de Volta!</h1>
+            <p>Para continuar conectado conosco, faça login com seus dados</p>
+            <button class="ghost" id="signIn">Entre</button>
+          </div>
+          <div class="overlay-panel overlay-right">
+            <h1>Seja Bem Vindo!</h1>
+            <p>Insira seus dados pessoais e comece sua jornada conosco</p>
+            <button class="ghost" id="signUp">Cadastre-se</button>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+  {{ registro_errors|json_script:"registro-errors-data" }}
+
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <script>
+    const errorsElement = document.getElementById('registro-errors-data');
+    
+    const registroErrors = JSON.parse(errorsElement.textContent);
+
+    if (registroErrors && registroErrors.length > 0) {
+      
+      const errorHtml = registroErrors.map(error => `<li>${error}</li>`).join('');
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops... algo deu errado!',
+        html: `<ul style="text-align: left; list-style-position: inside;">${errorHtml}</ul>`,
+        confirmButtonColor: '#ff4b2b',
+        confirmButtonText: 'Entendi'
+      });
+
+      document.addEventListener('DOMContentLoaded', (event) => {
+        const container = document.getElementById('container');
+        if (container) {
+          container.classList.add('right-panel-active');
+        }
+      });
+    }
+
+    {% if messages %}
+      {% for message in messages %}
+        Swal.fire({
+            icon: '{{ message.tags }}',
+            title: '{{ message }}',
+            confirmButtonColor: '#02981b',
+            confirmButtonText: 'Ok!'
+        });
+      {% endfor %}
+    {% endif %}
+  </script>
+{% endblock %}
