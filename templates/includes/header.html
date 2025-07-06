@@ -14,8 +14,19 @@
                             <a href="#"><i class="fa fa-twitter"></i></a>
                             <a href="#"><i class="fa fa-instagram"></i></a>
                         </div>
-                        <div class="header__top__right__auth">
-                            <a href="{% url 'login' %}"><i class="fa fa-user"></i> Login</a>
+                        <div class="header__top__right__auth">  
+                            {% if user.is_authenticated %}
+                                <div class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa fa-user"></i> Olá, {{ user.username }}
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="{% url 'logout' %}">Sair</a>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <a href="{% url 'login' %}"><i class="fa fa-user"></i> Login</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -53,3 +64,38 @@
     </div>
 </header>
 <!-- Header Section End -->
+
+<!-- ======================================================= -->
+<!-- CSS CORRIGIDO PARA O DROPDOWN -->
+<!-- ======================================================= -->
+<!-- ======================================================= -->
+<!-- CSS FINAL E CORRIGIDO PARA O DROPDOWN -->
+<!-- ======================================================= -->
+<style>
+    /* 1. Container do Dropdown: Usamos min-width para alinhar perfeitamente */
+    .header__top__right__auth .dropdown .dropdown-menu {
+        min-width: 100%; /* <<< ESTA É A CORREÇÃO DEFINITIVA */
+        padding: 0 !important;
+        border: 1px solid #ebebeb !important; 
+        box-shadow: none !important;
+        margin-top: 8px !important;
+        overflow: hidden;
+    }
+
+    /* 2. Item do Dropdown: Centralizado para melhor estética */
+    .header__top__right__auth .dropdown .dropdown-item {
+        font-size: 14px;
+        color: #1c1c1c !important; 
+        background-color: #ffffff !important; 
+        padding: 8px 15px !important;
+        transition: all 0.3s ease !important;
+        text-align: left; /* Mantém o texto "Sair" centralizado */
+    }
+
+    /* 3. Efeito de Hover: Sem alterações */
+    .header__top__right__auth .dropdown .dropdown-item:hover,
+    .header__top__right__auth .dropdown .dropdown-item:focus { 
+        color: #ffffff !important;
+        background-color: #7fad39 !important;
+    }
+</style>
