@@ -67,6 +67,9 @@ CSRF_TRUSTED_ORIGINS = [
     'https://aplicacaoprogweb.azurewebsites.net',
 ]
 
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 ROOT_URLCONF = 'produtos_naturais.urls'
 
