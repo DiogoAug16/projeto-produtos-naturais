@@ -3,7 +3,6 @@ from decimal import Decimal
 from departamento.models import Departamento
 from categoria.models import Categoria
 from favoritos.models import FavItem, Favoritos
-from favoritos.views import getFavId
 from produto.models import Produto
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
@@ -30,7 +29,7 @@ def visualizar_loja(request, departamento_slug=None, categoria_slug=None):
     produtos_promocao = Produto.objects.filter(
         esta_disponivel=True,
         promocao_disponivel=True,
-        promocao_valor_porcentagem__gt=0,
+        promocao_valor_porcentagem__gt=0, 
     ).order_by('?')[:9]
 
     context = {
@@ -44,7 +43,7 @@ def visualizar_loja(request, departamento_slug=None, categoria_slug=None):
         'ordenar': request.GET.get('ordenar'),
     }
 
-    return render(request, 'shop-grid.html', context)
+    return render(request, 'loja/shop-grid.html', context)
 
 
 def buscar_produtos(request, keyword):
@@ -71,17 +70,25 @@ def buscar_produtos(request, keyword):
         'produtos_promocao': produtos_promocao,
     }
 
-    return render(request, 'shop-grid.html', context)
+    return render(request, 'loja/shop-grid.html', context)
 
 def visualizar_detalhe_produto(request, categoria_slug, produto_slug, departamento_slug):
     produto = get_object_or_404(Produto, slug=produto_slug, categoria__slug=categoria_slug)
-
-    fav_id = getFavId(request)
+    
     produto_esta_nos_favoritos = False
-
+    
     try:
-        favoritos = Favoritos.objects.get(fav_id=fav_id)
+        if request.user.is_authenticated:
+            favoritos = Favoritos.objects.get(user=request.user)
+        else:
+            session_key = request.session.session_key
+            if session_key:
+                favoritos = Favoritos.objects.get(fav_id=session_key)
+            else:
+                raise Favoritos.DoesNotExist
+        
         produto_esta_nos_favoritos = FavItem.objects.filter(favoritos=favoritos, produto=produto).exists()
+
     except Favoritos.DoesNotExist:
         pass
 
@@ -90,7 +97,7 @@ def visualizar_detalhe_produto(request, categoria_slug, produto_slug, departamen
         'produto_esta_nos_favoritos': produto_esta_nos_favoritos,
     }
 
-    return render(request, 'shop-details.html', context)
+    return render(request, 'loja/shop-details.html', context)
 
     
 def calcular_frete(request):
