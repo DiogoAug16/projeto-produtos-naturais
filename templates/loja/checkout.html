@@ -55,7 +55,7 @@
                                         <div class="checkout__input"><input type="text" placeholder="CEP" id="cep" name="cep" required></div>
                                     </div>
                                     <div class="col-lg-9">
-                                        <input type="text" disabled id="endereco" name="endereco" placeholder="Logradouro" class="checkout__input__add" required>
+                                        <input type="text" readonly id="endereco" name="endereco" placeholder="Logradouro" class="checkout__input__add" required>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -67,8 +67,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="checkout__input"><p>Estado<span>*</span></p><input type="text" disabled id="estado" name="estado" required></div>
-                            <div class="checkout__input"><p>Cidade<span>*</span></p><input type="text" disabled id="cidade" name="cidade" required></div>
+                            <div class="checkout__input"><p>Estado<span>*</span></p><input type="text" readonly id="estado" name="estado" required></div>
+                            <div class="checkout__input"><p>Cidade<span>*</span></p><input type="text" readonly id="cidade" name="cidade" required></div>
                             <div class="row">
                                 <div class="col-lg-6"><div class="checkout__input"><p>Telefone celular<span>*</span></p><input type="text" name="telefone" required></div></div>
                                 <div class="col-lg-6"><div class="checkout__input"><p>CPF<span>*</span></p><input type="text" name="cpf" required></div></div>
@@ -192,35 +192,33 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('checkoutForm');
-        const enderecoInput = document.getElementById('endereco');
-        const cidadeInput = document.getElementById('cidade');
-        const estadoInput = document.getElementById('estado');
         
         form.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            enderecoInput.disabled = false;
-            cidadeInput.disabled = false;
-            estadoInput.disabled = false;
-
             if (!form.checkValidity()) {
-                Swal.fire({ icon: 'warning', title: 'Atenção!', text: 'Por favor, preencha todos os campos obrigatórios (*).', confirmButtonText: 'Entendi', confirmButtonColor: '#7fad39' });
-                enderecoInput.disabled = true;
-                cidadeInput.disabled = true;
-                estadoInput.disabled = true;
+                Swal.fire({ 
+                    icon: 'warning', 
+                    title: 'Atenção!', 
+                    text: 'Por favor, preencha todos os campos obrigatórios (*).', 
+                    confirmButtonText: 'Entendi', 
+                    confirmButtonColor: '#7fad39' });
+
                 return;
             }
 
             Swal.fire({ title: 'Processando seu pedido...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
 
             const formData = new FormData(form);
-            fetch(window.location.origin + "{% url 'checkout' %}", {
+
+            fetch("{% url 'checkout' %}", {
                 method: 'POST',
                 body: formData,
                 headers: {
                     'X-CSRFToken': formData.get('csrfmiddlewaretoken')
                 }
             })  
+
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'unauthenticated') {

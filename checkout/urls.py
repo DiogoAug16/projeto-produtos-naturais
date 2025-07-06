@@ -3,8 +3,7 @@ from django.shortcuts import *
 from django.urls import path
 
 from checkout import views
-from .models import Pedido
 
 urlpatterns = [
-    path('', view=views.checkout_view, name='checkout'),
+    path('', view=views.visualizarCheckout, name='checkout'),
 ]

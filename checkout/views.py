@@ -9,7 +9,7 @@ from carrinho.models import CarItem
 from carrinho.views import _get_or_create_carrinho
 from .forms import PedidoForm
 
-def checkout_view(request):
+def visualizarCheckout(request):
     if not request.user.is_authenticated:
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'status': 'unauthenticated'}, status=403)
