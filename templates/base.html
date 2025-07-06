@@ -38,6 +38,7 @@
     {% include 'includes/footer.html' %}
 
     <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'js/popper.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/jquery.nice-select.min.js' %}"></script>
     <script src="{% static 'js/jquery-ui.min.js' %}"></script>
@@ -199,6 +200,22 @@
                     }
                 });
             }
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#profileDropdown').on('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                $(this).parent('.dropdown').toggleClass('open');
+            });
+
+            $(document).on('click', function(event) {
+                if (!$(event.target).closest('.dropdown').length) {
+                    $('.dropdown').removeClass('open');
+                }
+            });
         });
     </script>
             
