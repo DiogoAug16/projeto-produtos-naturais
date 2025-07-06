@@ -21,6 +21,9 @@
                                         <i class="fa fa-user"></i> Olá, {{ user.username }}
                                     </a>
                                     <div class="dropdown-menu">
+                                        {% if user.is_superuser %}
+                                            <a class="dropdown-item" href="{% url 'admin:index' %}">Painel de Admin</a>
+                                        {% endif %}
                                         <a class="dropdown-item" href="{% url 'logout' %}">Sair</a>
                                     </div>
                                 </div>
@@ -65,16 +68,10 @@
 </header>
 <!-- Header Section End -->
 
-<!-- ======================================================= -->
-<!-- CSS CORRIGIDO PARA O DROPDOWN -->
-<!-- ======================================================= -->
-<!-- ======================================================= -->
-<!-- CSS FINAL E CORRIGIDO PARA O DROPDOWN -->
-<!-- ======================================================= -->
 <style>
     /* 1. Container do Dropdown: Usamos min-width para alinhar perfeitamente */
     .header__top__right__auth .dropdown .dropdown-menu {
-        min-width: 100%; /* <<< ESTA É A CORREÇÃO DEFINITIVA */
+        min-width: 100%;
         padding: 0 !important;
         border: 1px solid #ebebeb !important; 
         box-shadow: none !important;
