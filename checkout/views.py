@@ -1,5 +1,3 @@
-# checkout/views.py
-
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -55,7 +53,6 @@ def visualizarCheckout(request):
 
             return JsonResponse({
                 'status': 'success',
-                'order_id': pedido.id,
                 'message': 'Pedido criado com sucesso! Aguardando pagamento.'
             })
         else:
