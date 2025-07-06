@@ -1,19 +1,20 @@
+# checkout/views.py
+
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
-from .models import Pedido, ItemPedido
+from .models import ItemPedido
 from carrinho.models import CarItem
 from carrinho.views import _get_or_create_carrinho
+from .forms import PedidoForm
 
 def checkout_view(request):
-    # Verifica se o usuário está autenticado
     if not request.user.is_authenticated:
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'status': 'unauthenticated'}, status=403)
         return redirect('login')
 
-    # 1. Obter o carrinho e os itens do carrinho
     carrinho = _get_or_create_carrinho(request)
     car_items = CarItem.objects.filter(carrinho=carrinho, esta_disponivel=True)
 
@@ -21,52 +22,49 @@ def checkout_view(request):
         messages.warning(request, "Seu carrinho está vazio.")
         return redirect('carrinho')
 
-    # 2. Calcular totais
-    subtotal = 0
-    valor_imposto = 0
-    for item in car_items:
-        subtotal += item.getSubTotal()
-        valor_imposto += item.getSubTotal() * (item.produto.imposto / 100)
-
+    subtotal = sum(item.getSubTotal() for item in car_items)
+    valor_imposto = sum(item.getSubTotal() * (item.produto.imposto / 100) for item in car_items)
     valor_total = subtotal + valor_imposto
 
-    # 3. Processar pedido
     if request.method == 'POST':
-        pedido = Pedido(
-            user=request.user,
-            nome=request.POST.get('nome'),
-            sobrenome=request.POST.get('sobrenome'),
-            endereco=request.POST.get('endereco'),
-            numero_endereco=request.POST.get('numero_endereco'),
-            complemento_endereco=request.POST.get('complemento_endereco'),
-            estado=request.POST.get('estado'),
-            cidade=request.POST.get('cidade'),
-            cep=request.POST.get('cep'),
-            telefone=request.POST.get('telefone'),
-            cpf=request.POST.get('cpf'),
-            metodo_pagamento=request.POST.get('metodo_pagamento'),
-            subtotal=subtotal,
-            valor_imposto=valor_imposto,
-            valor_total=valor_total,
-        )
-        pedido.save()
+        # 1. Crie uma instância do formulário com os dados do POST
+        form = PedidoForm(request.POST)
 
-        for item in car_items:
-            ItemPedido.objects.create(
-                pedido=pedido,
-                produto=item.produto,
-                preco_item=item.produto.preco_com_desconto(),
-                quantidade=item.quantidade
-            )
+        # 2. Valide o formulário
+        if form.is_valid():
+            # 3. Use commit=False para criar o objeto em memória sem salvar no DB
+            pedido = form.save(commit=False)
 
-        car_items.delete()
+            # 4. Adicione os dados que não vieram do formulário
+            pedido.user = request.user
+            pedido.subtotal = subtotal
+            pedido.valor_imposto = valor_imposto
+            pedido.valor_total = valor_total
+            
+            # 5. Agora salve o objeto Pedido completo no DB
+            pedido.save()
 
-        return JsonResponse({
-            'status': 'success',
-            'message': 'Pedido criado com sucesso! Aguardando pagamento.'
-        })
+            for item in car_items:
+                ItemPedido.objects.create(
+                    pedido=pedido,
+                    produto=item.produto,
+                    preco_item=item.produto.preco_com_desconto(),
+                    quantidade=item.quantidade
+                )
+            car_items.delete()
 
-    # GET
+            return JsonResponse({
+                'status': 'success',
+                'order_id': pedido.id,
+                'message': 'Pedido criado com sucesso! Aguardando pagamento.'
+            })
+        else:
+            return JsonResponse({
+                'status': 'error',
+                'errors': form.errors
+            }, status=400) # status 400 indica uma "Bad Request"
+
+    # GET request
     context = {
         'car_items': car_items,
         'subtotal': subtotal,
