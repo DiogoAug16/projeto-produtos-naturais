@@ -29,65 +29,49 @@
                 </div>
             </div>
             <div class="checkout__form">
-                <h4>Billing Details</h4>
-                <form action="#">
+                <h4>Detalhes da Cobrança</h4>
+                <form id="checkoutForm" action="{% url 'checkout' %}" method="POST" novalidate>
+                    {% csrf_token %}
                     <div class="row">
                         <div class="col-lg-8 col-md-6">
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Nome<span>*</span></p>
-                                        <input type="text">
+                                        <input type="text" name="nome" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Sobrenome<span>*</span></p>
-                                        <input type="text">
+                                        <input type="text" name="sobrenome" required>
                                     </div>
                                 </div>
                             </div>
                             <div class="checkout__input">
                                 <p>Endereço<span>*</span></p>
-                                <input type="text" placeholder="Logradouro" class="checkout__input__add">
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="checkout__input"><input type="text" placeholder="CEP" id="cep" name="cep" required></div>
+                                    </div>
+                                    <div class="col-lg-9">
+                                        <input type="text" disabled id="endereco" name="endereco" placeholder="Logradouro" class="checkout__input__add" required>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-lg-2">
-                                        <div class="checkout__input">
-                                            <input type="text" placeholder="Numero">
-                                        </div>
+                                        <input type="text" id="numero_endereco" name="numero_endereco" placeholder="Numero" required>
                                     </div>
                                     <div class="col-lg-10">
-                                        <div class="checkout__input">
-                                            <input type="text" placeholder="Complemento">
-                                        </div>
+                                        <input type="text" name="complemento_endereco" placeholder="Complemento">
                                     </div>
                                 </div>
                             </div>
-                            <div class="checkout__input">
-                                <p>Estado<span>*</span></p>
-                                <input type="text">
-                            </div>
-                            <div class="checkout__input">
-                                <p>Cidade<span>*</span></p>
-                                <input type="text">
-                            </div>
-                            <div class="checkout__input">
-                                <p>CEP<span>*</span></p>
-                                <input type="text">
-                            </div>
+                            <div class="checkout__input"><p>Estado<span>*</span></p><input type="text" disabled id="estado" name="estado" required></div>
+                            <div class="checkout__input"><p>Cidade<span>*</span></p><input type="text" disabled id="cidade" name="cidade" required></div>
                             <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="checkout__input">
-                                        <p>Telefone celular<span>*</span></p>
-                                        <input type="text">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="checkout__input">
-                                        <p>CPF<span>*</span></p>
-                                        <input type="text">
-                                    </div>
-                                </div>
+                                <div class="col-lg-6"><div class="checkout__input"><p>Telefone celular<span>*</span></p><input type="text" name="telefone" required></div></div>
+                                <div class="col-lg-6"><div class="checkout__input"><p>CPF<span>*</span></p><input type="text" name="cpf" required></div></div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
@@ -95,23 +79,18 @@
                                 <h4>Seu pedido</h4>
                                 <div class="checkout__order__products">Produtos <span>Total</span></div>
                                 <ul>
-                                    <li>Vegetable’s Package <span>$75.99</span></li>
+                                    {% for item in car_items %}
+                                        <li>{{ item.produto.produto_nome }} (x{{ item.quantidade }}) <span>R$ {{ item.getSubTotal|stringformat:".2f" }}</span></li>
+                                    {% endfor %}
                                 </ul>
-                                <div class="checkout__order__subtotal">Subtotal <span>$750.99</span></div>
-                                <div class="checkout__order__total">Total <span>$750.99</span></div>
+                                <div class="checkout__order__subtotal">Subtotal <span>R$ {{ subtotal|stringformat:".2f" }}</span></div>
+                                <div class="checkout__order__subtotal">Impostos <span>R$ {{ valor_imposto|stringformat:".2f" }}</span></div>
+                                <div class="checkout__order__total">Total <span>R$ {{ valor_total|stringformat:".2f" }}</span></div>
                                 <div class="checkout__input__checkbox">
-                                    <label for="pix">
-                                        Pix
-                                        <input type="checkbox" id="pix">
-                                        <span class="checkmark"></span>
-                                    </label>
+                                    <label for="pix">Pix<input type="radio" id="pix" name="metodo_pagamento" value="PIX" checked><span class="checkmark"></span></label>
                                 </div>
                                 <div class="checkout__input__checkbox">
-                                    <label for="credito/debito">
-                                        Crédito/Débito
-                                        <input type="checkbox" id="credito/debito">
-                                        <span class="checkmark"></span>
-                                    </label>
+                                    <label for="card">Crédito/Débito<input type="radio" id="card" name="metodo_pagamento" value="CARD"><span class="checkmark"></span></label>
                                 </div>
                                 <button type="submit" class="site-btn">FAZER PEDIDO</button>
                             </div>
@@ -123,3 +102,201 @@
     </section>
     <!-- Checkout Section End -->
 {%endblock %}
+
+{% block extra_js %}
+  <!-- 1. Carregamento das bibliotecas externas -->
+  <script src="https://unpkg.com/imask"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- ====================================================================== -->
+  <!-- CSS para formatar o formulário de cartão dentro do SweetAlert          -->
+  <!-- ====================================================================== -->
+  <style>
+    .card-payment-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px; /* Espaço entre as linhas do formulário */
+        margin-top: 10px;
+    }
+    .card-payment-form .swal-form-row {
+        display: flex;
+        gap: 15px; /* Espaço entre as colunas */
+    }
+    .card-payment-form .swal-form-group {
+        flex: 1; /* Faz cada grupo ocupar espaço igual */
+        text-align: left;
+    }
+    .card-payment-form label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 14px;
+        color: #555;
+        font-weight: 600;
+    }
+    .swal2-input {
+        margin: 0 !important; /* Reseta a margem padrão do swal2-input */
+    }
+  </style>
+
+  <!-- ====================================================================== -->
+  <!-- Script para aplicar Máscaras de Input (CPF, CEP, Telefone)           -->
+  <!-- ====================================================================== -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const cpfInput = document.querySelector('input[name="cpf"]');
+        const cepInput = document.getElementById('cep');
+        const telefoneInput = document.querySelector('input[name="telefone"]');
+
+        if (cpfInput) IMask(cpfInput, { mask: '000.000.000-00' });
+        if (cepInput) IMask(cepInput, { mask: '00000-000' });
+        if (telefoneInput) IMask(telefoneInput, { mask: '(00) 00000-0000' });
+    });
+  </script>
+
+  <!-- ====================================================================== -->
+  <!-- Script para Auto-preenchimento do Endereço via CEP                     -->
+  <!-- ====================================================================== -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const cepInput = document.getElementById('cep');
+        const enderecoInput = document.getElementById('endereco');
+        const cidadeInput = document.getElementById('cidade');
+        const estadoInput = document.getElementById('estado');
+        const numeroEnderecoInput = document.getElementById('numero_endereco');
+
+        if (cepInput) {
+            cepInput.addEventListener('keyup', function() {
+                const cepLimpo = cepInput.value.replace(/\D/g, '');
+                if (cepLimpo.length === 8) {
+                    fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.erro) {
+                                enderecoInput.value = data.logradouro;
+                                cidadeInput.value = data.localidade;
+                                estadoInput.value = data.uf;
+                                
+                                numeroEnderecoInput.focus();
+                            }
+                        })
+                        .catch(error => console.error('Erro ao consultar o CEP:', error));
+                }
+            });
+        }
+    });
+  </script>
+
+  <!-- ====================================================================== -->
+  <!-- Script Principal de Checkout (Validação, Submissão e Modais de Pagamento) -->
+  <!-- ====================================================================== -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('checkoutForm');
+        const enderecoInput = document.getElementById('endereco');
+        const cidadeInput = document.getElementById('cidade');
+        const estadoInput = document.getElementById('estado');
+        
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            enderecoInput.disabled = false;
+            cidadeInput.disabled = false;
+            estadoInput.disabled = false;
+
+            if (!form.checkValidity()) {
+                Swal.fire({ icon: 'warning', title: 'Atenção!', text: 'Por favor, preencha todos os campos obrigatórios (*).', confirmButtonText: 'Entendi', confirmButtonColor: '#7fad39' });
+                enderecoInput.disabled = true;
+                cidadeInput.disabled = true;
+                estadoInput.disabled = true;
+                return;
+            }
+
+            Swal.fire({ title: 'Processando seu pedido...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+            const formData = new FormData(form);
+            fetch("{% url 'checkout' %}", { method: 'POST', body: formData, headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') } })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const metodoPagamento = document.querySelector('input[name="metodo_pagamento"]:checked').value;
+                    if (metodoPagamento === 'PIX') {
+                        mostrarModalPix();
+                    } else {
+                        mostrarModalCartao();
+                    }
+                } else {
+                    Swal.fire('Erro!', 'Ocorreu um problema ao processar seu pedido.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erro no Fetch:', error);
+                Swal.fire('Erro de Conexão', 'Não foi possível se conectar ao servidor.', 'error');
+            });
+        });
+
+        // --- Funções Auxiliares para os Modais ---
+        function mostrarModalPix() {
+            const fakePixKey = '00020126360014br.gov.bcb.pix0114+5511999999999520400005303986540410.005802BR5913NOME COMPLETO6008BRASILIA62070503***6304E2B1';
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(fakePixKey)}`;
+            Swal.fire({ title: 'Pagamento via PIX', html: `<p>Escaneie o QR Code abaixo para pagar:</p><img src="${qrCodeUrl}" alt="QR Code PIX Fictício" style="margin: 15px 0;"><p>Ou use a chave "Copia e Cola":</p><input type="text" value="${fakePixKey}" readonly style="width: 100%; padding: 8px; text-align: center; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; margin-bottom: 20px;">`, showConfirmButton: false, footer: `<a href="{% url 'home' %}" class="site-btn">Voltar para a Home</a>` });
+        }
+
+        // <<< FUNÇÃO DO MODAL DE CARTÃO CORRIGIDA >>>
+        function mostrarModalCartao() {
+            Swal.fire({
+                title: 'Pagamento com Cartão',
+                html: `
+                    <div class="card-payment-form">
+                        <!-- Linha 1: Número do Cartão -->
+                        <div class="swal-form-group">
+                            <label for="swal-card-number">Número do Cartão</label>
+                            <input id="swal-card-number" class="swal2-input" placeholder="0000 0000 0000 0000">
+                        </div>
+                        <!-- Linha 2: Nome no Cartão -->
+                        <div class="swal-form-group">
+                            <label for="swal-card-name">Nome no Cartão</label>
+                            <input id="swal-card-name" class="swal2-input" placeholder="NOME COMPLETO">
+                        </div>
+                        <!-- Linha 3: Validade e CVV -->
+                        <div class="swal-form-row">
+                            <div class="swal-form-group">
+                                <label for="swal-card-expiry">Validade (MM/AA)</label>
+                                <input id="swal-card-expiry" class="swal2-input" placeholder="MM/AA">
+                            </div>
+                            <div class="swal-form-group">
+                                <label for="swal-card-cvv">CVV</label>
+                                <input id="swal-card-cvv" class="swal2-input" placeholder="123">
+                            </div>
+                        </div>
+                    </div>
+                `,
+                confirmButtonText: 'Concluir Pagamento',
+                confirmButtonColor: '#7fad39',
+                footer: `<a href="{% url 'home' %}" class="site-btn" style="background: #6f6f6f;">Voltar para a Home</a>`,
+                didOpen: () => {
+                    // Bônus: Aplicando máscaras aos campos do cartão
+                    const cardNumberInput = document.getElementById('swal-card-number');
+                    const cardExpiryInput = document.getElementById('swal-card-expiry');
+                    const cardCvvInput = document.getElementById('swal-card-cvv');
+                    
+                    IMask(cardNumberInput, { mask: '0000 0000 0000 0000' });
+                    IMask(cardExpiryInput, { mask: '00/00' });
+                    IMask(cardCvvInput, { mask: '000[0]' }); // Aceita 3 ou 4 dígitos
+                },
+                preConfirm: () => {
+                    const cardNumber = document.getElementById('swal-card-number').value;
+                    if (!cardNumber || cardNumber.length < 19) { // 16 dígitos + 3 espaços
+                        Swal.showValidationMessage(`Por favor, insira um número de cartão válido`);
+                    }
+                    return true;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ icon: 'success', title: 'Pagamento Confirmado!', text: 'Seu pedido foi finalizado com sucesso.', confirmButtonText: 'OK', confirmButtonColor: '#7fad39' })
+                    .then(() => { window.location.href = "{% url 'home' %}"; });
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
