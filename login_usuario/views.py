@@ -54,10 +54,6 @@ class CustomLoginView(auth_views.LoginView):
         return super().form_invalid(form)
     
     def form_valid(self, form):
-        """
-        Esta função é chamada após o login ser validado.
-        Aqui vamos unir os carrinhos e favoritos da sessão com os do usuário.
-        """
         # Primeiro, faz o login normalmente
         response = super().form_valid(form)
         
