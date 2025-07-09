@@ -4,10 +4,6 @@ from .models import CarItem, Carrinho
 from favoritos.models import FavItem, Favoritos
 
 def menu_context(request):
-    """
-    Um único context processor para fornecer os contadores do carrinho e favoritos,
-    e o valor total do carrinho para todas as páginas.
-    """
     car_contador = 0
     fav_contador = 0
     valor_total_carrinho = 0.0
